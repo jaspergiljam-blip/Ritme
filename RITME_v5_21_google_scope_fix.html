@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RITME</title>
+<style>
+:root{
+  --paper:#f3f0e8;
+  --ink:#111;
+  --acid:#d7ff2f;
+  --line:#c9c6bd;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+body{padding-bottom:112px}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+header{padding:26px 18px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.logo{font-size:39px;line-height:.78;font-weight:950;letter-spacing:-.08em}
+.date{font-size:10px;line-height:1.35;letter-spacing:.14em;font-weight:900;text-align:right;opacity:.55}
+main{padding:0 16px 28px;max-width:620px;margin:auto}
+.screen{display:none}
+.screen.active{display:block}
+.hero{padding:25px 2px 24px}
+.eyebrow{font-size:10px;letter-spacing:.16em;font-weight:900;opacity:.55}
+h1{font-size:47px;line-height:.84;letter-spacing:-.055em;margin:8px 0 13px}
+h2{font-size:29px;line-height:.92;letter-spacing:-.04em;margin:7px 0 10px}
+p{line-height:1.48}
+.card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:19px;margin:0 0 12px}
+.card.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card.acid{background:var(--acid);border-color:var(--ink)}
+.focus-title{font-size:28px;margin:6px 0 8px}
+.reason{margin:0;line-height:1.45}
+.actions{display:flex;gap:8px;margin-top:15px}
+.primary,.secondary{border-radius:999px;padding:13px 16px;font-weight:900}
+.primary{border:0;background:var(--acid);color:var(--ink);flex:1}
+.secondary{border:1px solid #666;background:transparent;color:var(--paper);flex:1}
+.light-secondary{border:1px solid var(--ink);background:transparent;color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pill{font-size:10px;font-weight:900;letter-spacing:.06em;padding:8px 10px;border:1px solid #555;border-radius:999px}
+.event{display:flex;gap:12px;padding:11px 0;border-top:1px solid #333}
+.event:first-child{border-top:0}
+.time{width:72px;font-size:11px;font-weight:900;flex:none}
+.free{border-left:3px solid var(--acid);padding-left:9px}
+.basic{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.basic:first-of-type{border-top:0}
+.basic input{width:20px;height:20px;accent-color:var(--ink)}
+.goal{padding:13px 0;border-top:1px solid var(--line)}
+.goal:first-of-type{border-top:0}
+.goaltop{display:flex;justify-content:space-between;font-weight:900}
+.bar{height:6px;background:#d5d2c9;border-radius:99px;margin-top:8px;overflow:hidden}
+.fill{height:100%;background:var(--ink)}
+.small{font-size:11px;opacity:.65;margin-top:5px}
+.nav{
+ position:fixed;left:0;right:0;bottom:0;height:108px;background:var(--paper);
+ border-top:1px solid var(--ink);z-index:50;padding:8px 16px 9px;
+ display:flex;flex-direction:column;gap:7px
+}
+.park{align-self:flex-end;border:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 17px;font-size:11px;font-weight:900}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;height:43px}
+.tab{border:0;background:transparent;color:#777;font-size:11px;font-weight:900}
+.tab.active{background:var(--acid);color:var(--ink)}
+.overlay{position:fixed;inset:0;background:rgba(17,17,17,.97);z-index:100;display:none;align-items:center;justify-content:center;padding:22px 16px 126px}
+.overlay.open{display:flex}
+.modal{width:min(450px,100%);max-height:100%;overflow:auto;background:var(--paper);border-radius:24px;padding:27px 21px}
+.energy{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.energy button{border:1px solid #999;background:var(--white);border-radius:14px;padding:16px 6px;font-weight:900}
+.energy button.selected{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.full{width:100%;margin-top:13px}
+.list button{width:100%;text-align:left;padding:14px;border:1px solid #bbb;border-radius:14px;background:var(--white);margin-top:8px}
+.list strong{font-size:15px}
+.list span{font-size:11px;opacity:.55}
+textarea{width:100%;min-height:130px;padding:14px;border:1px solid var(--ink);background:var(--paper);resize:vertical}
+.notice{font-size:12px;line-height:1.45}
+.empty{padding:20px 0;opacity:.6}
+@media(min-width:700px){.nav{height:96px}.tabs{height:38px}.park{margin-right:4px}body{padding-bottom:100px}}
+<style>
+.goal-progress-note{font-size:11px;opacity:.6;margin-top:7px}
+
+<style>
+.test-result{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--white)}
+.test-result strong{font-size:18px}
+.test-result span{display:block;font-size:11px;opacity:.6;margin-top:5px}
+
+<style>
+.choice-list{margin-top:12px}
+.choice-list button{border-color:var(--ink)}
+
+<style>
+#minutesInput{
+  width:100%;
+  margin-top:14px;
+  padding:16px 14px;
+  border:1px solid var(--ink);
+  border-radius:14px;
+  background:var(--white);
+  color:var(--ink);
+  font-size:24px;
+  font-weight:900;
+  outline:none;
+}
+#minutesInput:focus{box-shadow:0 0 0 3px var(--acid)}
+<style>
+.active-event{background:var(--ink);color:var(--paper);padding-left:10px;padding-right:10px;border-radius:10px}
+.soon-event{border-left:3px solid var(--acid);padding-left:9px}
+</style>
+</style>
+</style>
+</style>
+</style>
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">RITME</div>
+  <div class="date">VANDAAG<br><span id="dateLabel"></span></div>
+</header>
+
+<main>
+  <section class="screen active" data-screen="today">
+    <div class="hero">
+      <div class="eyebrow">MINDER RUIS. MEER LEVEN.</div>
+      <h1>Wat heb je<br>vandaag nodig?</h1>
+      <p>Geen perfecte planning. Eerst luisteren naar jou. Daarna één goede volgende stap.</p>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">DAGREGIE</div>
+      <div class="focus-title" id="focusTitle">—</div>
+      <p class="reason" id="focusReason">De dagmotor kiest op basis van je energie, basis, agenda en weekdoelen.</p>
+      <div class="meta" id="focusMeta"></div>
+      <div class="actions">
+        <button class="primary" id="doFocus">DIT GA IK DOEN</button>
+        <button class="secondary" id="chooseOther">ANDERS</button>
+      </div>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">AGENDA</div>
+      <div id="agenda"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">BASIS</div>
+      <div id="basics"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">WEEK</div>
+      <h2 id="weekHeadline">Je week, niet je lijstje.</h2>
+      <p id="weekCopy">RITME bewaakt de richting. Je hoeft niet alles vandaag te doen.</p>
+      <div id="goals"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">AFSLUITEN</div>
+      <h2>Waar ben je vandaag trots op?</h2>
+      <p>Geen rapport. Gewoon één ding dat vandaag goed was.</p>
+      <textarea id="proud" placeholder="Bijvoorbeeld: ik ben toch naar buiten gegaan."></textarea>
+      <button class="primary full" id="saveProud">OPSLAAN</button>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">DENK MEE</div>
+      <h2>Even samen kijken.</h2>
+      <p>Waar loop je tegenaan? RITME kan helpen het kleiner te maken.</p>
+      <button class="secondary" id="think">WAAR BEGIN IK?</button>
+      <button class="secondary" id="headFull">TE VEEL IN MIJN HOOFD</button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="food">
+    <div class="hero"><div class="eyebrow">ETEN</div><h1>Eten zonder<br>gedoe.</h1><p>Een ondersteunende plek voor menu, voorraad en boodschappen. Niet de hoofdzaak van je dag.</p></div>
+    <div class="card"><h2>Deze week</h2><p>Ma · Soep<br>Di · Hutspot<br>Wo · Pizza</p><button class="primary full" id="shopping">BOODSCHAPPENLIJST</button></div>
+    <div class="card"><h2>Voorraad</h2><p>RITME gebruikt je voorraad om onnodige boodschappen te voorkomen.</p></div>
+  </section>
+
+  <section class="screen" data-screen="goals">
+    <div class="hero"><div class="eyebrow">DOELEN</div><h1>Richting,<br>geen druk.</h1><p>Weekminima helpen de lange lijn bewaken. Een minimum is nooit een maximum.</p></div>
+    <div class="card" id="goalDetail"></div>
+  </section>
+
+  <section class="screen" data-screen="more">
+    <div class="hero"><div class="eyebrow">MEER</div><h1>RITME.</h1><p>Agenda, instellingen en hulp. De dingen die RITME ondersteunen, maar je dag niet overnemen.</p></div>
+    <div class="card"><h2>Google Agenda</h2><p>Alleen lezen. RITME gebruikt afspraken als ankers en zoekt ruimte ertussen.</p><button class="light-secondary primary" id="calendarInfo">AGENDA KOPPELEN</button></div>
+    <div class="card">
+      <div class="eyebrow">ONTWIKKELING</div>
+      <h2>Testmodus</h2>
+      <p>Bekijk hoe de dagmotor reageert op verschillende situaties. Dit verandert je echte dag niet blijvend.</p>
+      <button class="light-secondary primary" id="testMode">DAGMOTOR TESTEN</button>
+    </div>
+    <div class="card"><h2>RITME-principe</h2><p>Elke dag iets doen voor je toekomst, zonder je huidige leven te verwaarlozen.</p></div>
+  </section>
+</main>
+
+<nav class="nav">
+  <button class="park" id="park">＋ PARKEREN</button>
+  <div class="tabs">
+    <button class="tab active" data-tab="today">VANDAAG</button>
+    <button class="tab" data-tab="food">ETEN</button>
+    <button class="tab" data-tab="goals">DOELEN</button>
+    <button class="tab" data-tab="more">MEER</button>
+  </div>
+</nav>
+</div>
+
+
+
+<div class="overlay" id="calendarConnectCard">
+  <div class="modal">
+    <div class="eyebrow">AGENDA</div>
+    <h2>Google Agenda</h2>
+    <p class="notice">RITME kan straks je afspraken lezen en alleen de vrije ruimte gebruiken om één passende volgende stap te kiezen.</p>
+    <div class="small-note" id="calendarStatus">GOOGLE AGENDA · KOPPELING KLAAR</div>
+    <button class="primary full" id="calendarConnect">AGENDA KOPPELEN</button>
+    <button class="secondary full" id="calendarCancel">NU NIET</button>
+  </div>
+</div>
+
+<div class="overlay" id="infoOverlay">
+  <div class="modal">
+    <div class="eyebrow" id="infoEyebrow">RITME</div>
+    <h2 id="infoTitle">Even kijken</h2>
+    <p class="notice" id="infoBody"></p>
+    <button class="primary full" id="infoClose">OKÉ</button>
+  </div>
+</div>
+
+<div class="overlay" id="energyOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · CHECK-IN</div>
+    <h1>Hoeveel<br>energie heb je?</h1>
+    <p>Geen goed of fout. Gewoon even voelen.</p>
+    <div class="energy">
+      <button data-energy="low">WEINIG</button>
+      <button data-energy="normal">NORMAAL</button>
+      <button data-energy="high">VEEL</button>
+    </div>
+    <button class="primary full" id="energyNext" disabled>KIJK WAT NU HELPT</button>
+  </div>
+</div>
+
+<div class="overlay" id="choiceOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · ÉÉN DING</div>
+    <h1>Wat helpt<br>je nu?</h1>
+    <p id="choiceIntro">Ik kies één volgende stap. Jij hoeft niets anders te doen.</p>
+    <div class="card dark">
+      <div class="eyebrow">MIJN VOORSTEL</div>
+      <div class="focus-title" id="choiceTitle">—</div>
+      <p class="reason" id="choiceReason">—</p>
+    </div>
+    <button class="primary full" id="choiceDo">DIT GA IK DOEN</button>
+    <button class="light-secondary primary full" id="choiceOther">ANDERS KIEZEN</button>
+  </div>
+</div>
+
+<div class="overlay" id="minutesOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · AFRONDEN</div>
+    <h1>Hoe lang<br>heb je dit gedaan?</h1>
+    <p>Een schatting is genoeg. Voor creatieve doelen gebruikt RITME dit om je weekrichting bij te houden. Andere acties worden gewoon als gedaan onthouden.</p>
+    <input id="minutesInput" type="number" inputmode="numeric" min="0" max="600" value="30" aria-label="Aantal minuten">
+    <button class="primary full" id="minutesSave">OPSLAAN</button>
+    <button class="light-secondary primary full" id="minutesCancel">ANNULEREN</button>
+  </div>
+</div>
+
+<div class="overlay" id="testOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · TESTMODUS</div>
+    <h1>Hoe reageert<br>de dagmotor?</h1>
+    <p>Kies een situatie. RITME simuleert wat de volgende stap zou zijn.</p>
+    <div class="notice">De test gebruikt tijdelijk een gesimuleerde agenda. Je echte daggegevens worden niet aangepast.</div>
+    <div class="list" id="testList"></div>
+    <button class="light-secondary primary full" id="testClose">SLUITEN</button>
+  </div>
+</div>
+
+<div class="overlay" id="parkOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · PARKEREN</div>
+    <h1>Niet nu.<br>Wel bewaren.</h1>
+    <p>Parkeer het idee. Het hoeft nu nergens heen.</p>
+    <textarea id="parkText" placeholder="Wat kwam er tussendoor in je hoofd?"></textarea>
+    <button class="primary full" id="parkSave">PARKEREN</button>
+    <button class="light-secondary primary full" id="parkClose">SLUITEN</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const saved=JSON.parse(localStorage.getItem("ritmeState")||"null");
+  const state=saved||{
+    energy:null,
+    focusDone:false,
+    currentFocus:null,
+    proud:"",
+    basics:{water:false,food:false,clothes:false,teeth:false,outside:false},
+    agenda:[
+      {start:"09:30",end:"10:30",title:"Afspraak"},
+      {start:"14:15",end:"15:00",title:"Elin ophalen"},
+      {start:"17:00",end:"17:30",title:"Koken"}
+    ],
+    goals:[
+      {name:"FERAL",done:0,target:60},
+      {name:"WATCH ME!",done:0,target:60},
+      {name:"KUNST",done:60,target:60},
+      {name:"MUZIEK",done:30,target:60}
+    ],
+    parked:[]
+  };
+
+  // v5.2: weekdoelen zijn echte voortgang, opgeslagen in de browser.
+  const WEEK_KEY="ritmeWeekProgress";
+  const weekSaved=JSON.parse(localStorage.getItem(WEEK_KEY)||"null");
+  const week={};
+  state.goals.forEach(g=>{
+    const key=g.name;
+    week[key]=weekSaved&&Number.isFinite(Number(weekSaved[key])) ? Number(weekSaved[key]) : Number(g.done)||0;
+  });
+  function saveWeek(){localStorage.setItem(WEEK_KEY,JSON.stringify(week));}
+  function syncGoals(){
+    state.goals.forEach(g=>{g.done=week[g.name]||0;});
+  }
+  function goalFromTask(task){
+    const t=(task||"").toUpperCase();
+    if(t.includes("FERAL")||t.includes("MUZIEK")) return "MUZIEK";
+    if(t.includes("WATCH ME")) return "WATCH ME!";
+    if(t.includes("KUNST")) return "KUNST";
+    return null;
+  }
+  function addGoalTime(task,minutes){
+    const key=goalFromTask(task);
+    if(!key) return;
+    week[key]=Math.max(0,(week[key]||0)+minutes);
+    saveWeek();
+    syncGoals();
+  }
+  syncGoals();
+  if(!Array.isArray(state.completedToday)) state.completedToday=[];
+  if(typeof state.justCompleted!=="boolean") state.justCompleted=false;
+  function markCompletedToday(task){
+    const key=goalFromTask(task)||(
+      task.includes("ETEN")?"food":
+      task.includes("BUITEN")?"outside":
+      task.includes("BASIS")?"basic":null
+    );
+    if(key && !state.completedToday.includes(key)) state.completedToday.push(key);
+  }
+
+  function persist(){
+    const copy={...state};
+    delete copy._testNow;
+    localStorage.setItem("ritmeState",JSON.stringify(copy));
+  }
+  function todayKey(){ return new Date().toISOString().slice(0,10); }
+  if(state.day!==todayKey()){
+    state.day=todayKey();
+    state.energy=null; state.focusDone=false; state.currentFocus=null;
+    state.completedToday=[];
+    state.justCompleted=false;
+    state.pendingCompletedTask=null;
+    state.proud="";
+    persist();
+  }
+
+  const $=id=>document.getElementById(id);
+  const mins=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};
+
+  function currentMinutes(){
+    if(Number.isFinite(state._testNow)) return state._testNow;
+    const now=new Date();
+    return now.getHours()*60+now.getMinutes();
+  }
+
+  function clockLabel(total){
+    const safe=Math.max(0,Math.min(1439,Math.round(total)));
+    return `${String(Math.floor(safe/60)).padStart(2,"0")}:${String(safe%60).padStart(2,"0")}`;
+  }
+
+  $("dateLabel").textContent=new Intl.DateTimeFormat("nl-NL",{weekday:"short",day:"numeric",month:"numeric"}).format(new Date()).toUpperCase();
+
+  function nextFree(){
+    const now=currentMinutes();
+    let cursor=now;
+    let nextEvent=null;
+    for(const e of [...state.agenda].sort((a,b)=>mins(a.start)-mins(b.start))){
+      const s=mins(e.start),en=mins(e.end);
+      if(en<=now) continue;
+      if(s>cursor){
+        nextEvent=e;
+        return {
+          start:cursor,
+          end:s,
+          duration:s-cursor,
+          nextEvent,
+          untilNext:s-now
+        };
+      }
+      cursor=Math.max(cursor,en);
+    }
+    return {
+      start:cursor,
+      end:21*60,
+      duration:Math.max(0,21*60-cursor),
+      nextEvent:null,
+      untilNext:null
+    };
+  }
+
+  function missingBasics(){
+    return Object.keys(state.basics).filter(k=>!state.basics[k]);
+  }
+
+  function behindGoal(){
+    return state.goals.filter(g=>g.done<g.target)
+      .map(g=>({...g,missing:g.target-g.done}))
+      .sort((a,b)=>b.missing-a.missing)[0]||null;
+  }
+
+  function agendaContextLabel(free){
+    if(!free || free.duration <= 0) return "GEEN RUIMTE";
+    if(free.untilNext !== null && free.untilNext <= 15) return "AFSPRAAK KOMT ERAAN";
+    if(free.untilNext !== null && free.untilNext <= 30) return "KORTE RUIMTE";
+    if(free.duration >= 60) return "RUIME BLOK";
+    return "VRIJE RUIMTE";
+  }
+
+  function calculateFocus(){
+    const free=nextFree(), goal=behindGoal(), why=[];
+    const completedToday = state.completedToday || [];
+    const did = key => completedToday.includes(key);
+    const minutes = free.duration;
+    const untilNext = free.untilNext;
+
+    // Een afspraak die bijna begint krijgt voorrang. RITME bewaakt een buffer en vult die niet automatisch.
+    if(untilNext!==null && untilNext<=15){
+      why.push("AFSPRAAK","WEINIG TIJD");
+      if(!did("food") && !state.basics.food && untilNext>=8)
+        return ["SNEL IETS ETEN · 5 MIN","Je volgende afspraak begint bijna. Geen groot plan; zorg alleen dat je niet met lege maag vertrekt.",why];
+      const prep=Math.max(3,untilNext-3);
+      return ["KLAARMAKEN · "+prep+" MIN","Je volgende afspraak komt eraan. Houd een kleine buffer vrij om af te ronden en op tijd te vertrekken.",why];
+    }
+
+    // Binnen 30 minuten een afspraak? Dan geen diep werk starten. Een korte afrondactie kan nog wel.
+    if(untilNext!==null && untilNext<=30 && minutes>=10){
+      why.push("AFSPRAAK","KORT BLOK");
+      if(!did("food") && !state.basics.food && untilNext>=15)
+        return ["IETS ETEN · 10 MIN","Er komt binnenkort een afspraak. Dit is genoeg ruimte om eerst te eten en daarna rustig af te ronden.",why];
+      if(!did("outside") && untilNext>=20)
+        return ["NAAR BUITEN · 10 MIN","Er zit een afspraak aan te komen. Een korte wandeling past nog zonder je volgende afspraak te belasten.",why];
+      return ["KLEINE AFRONDING · 10 MIN","Er komt binnenkort een afspraak. Kies iets kleins dat je zonder haast kunt afsluiten.",why];
+    }
+
+    // Tijd is context: RITME kiest geen taak die groter is dan het blok dat er ligt.
+    if(!state.basics.food && !did("food")){
+      why.push("BASIS");
+      if(minutes>=15) return ["IETS ETEN","Je hebt nog niet gegeten. Eerst brandstof; daarna kijken we opnieuw.",why];
+      return ["SNACK · 10 MIN","Er is weinig tijd. Pak iets kleins zodat je niet met honger je afspraak in gaat.",why];
+    }
+
+    if(state.energy==="low"){
+      why.push("ENERGIE");
+      if(!did("outside") && minutes>=20)
+        return ["NAAR BUITEN · 20 MIN","Weinig energie en genoeg ruimte. Eerst je hoofd en lijf wat lucht geven.",why];
+      if(!did("basic") && minutes>=10)
+        return ["BASIS · 10 MIN","Je hebt weinig energie en weinig tijd. Kies iets kleins dat direct helpt.",why];
+      if(minutes>=5) return ["RESET · 5 MIN","Weinig energie. Gebruik vijf minuten om je omgeving of hoofd rustiger te maken.",why];
+      return ["WACHT EVEN","Er is nu nauwelijks ruimte. Je hoeft niets te forceren.",why];
+    }
+
+    // Zeer korte blokken krijgen alleen korte acties.
+    if(minutes < 10){
+      why.push("WEINIG TIJD");
+      return ["KLEINE RESET · 5 MIN","Je volgende vrije moment is kort. Bewaar het grotere werk voor een blok met meer ruimte.",why];
+    }
+
+    // 10–29 minuten: kleine betekenisvolle stap, geen groot weekdoel.
+    if(minutes < 30){
+      const small = !did("outside") ? ["NAAR BUITEN · 10 MIN","Je hebt een kort blok. Even naar buiten past precies."] :
+        !did("basic") ? ["BASIS · 10 MIN","Een klein blok is genoeg voor één praktische basisactie."] :
+        ["OPRUIMEN · 10 MIN","Gebruik dit korte blok om één klein stukje lichter te maken."];
+      why.push("KORT BLOK");
+      return [small[0],small[1],why];
+    }
+
+    // 30–59 minuten: kies een weekdoel dat nog niet vandaag is gedaan.
+    if(minutes < 60){
+      const alternatives = state.goals
+        .filter(g=>g.done<g.target && !did(g.name))
+        .sort((a,b)=>(b.target-b.done)-(a.target-a.done));
+      const chosen = alternatives[0];
+      if(chosen){
+        why.push("WEEKDOEL","30+ MIN");
+        const m=Math.min(45,chosen.target-chosen.done,minutes);
+        return [`${chosen.name} · ${m} MIN`,
+          `${chosen.name} kan deze week nog richting geven en past binnen je vrije tijd.`,
+          why];
+      }
+      why.push("VRIJE RUIMTE");
+      return ["VRIJE RUIMTE · 30 MIN","Je doelen staan op koers. Dit blok hoeft niet productief te worden.",why];
+    }
+
+    // 60+ minuten: alleen bij voldoende energie een stevig creatief blok.
+    if(state.energy==="high" && minutes>=60 && !did("MUZIEK")){
+      why.push("ENERGIE","RUIM BLOK");
+      return ["FERAL · 45 MIN","Je hebt energie én een ruim blok. Dit is een goed moment voor geconcentreerd creatief werk.",why];
+    }
+
+    if(goal){
+      const alternatives = state.goals
+        .filter(g=>g.done<g.target && !did(g.name))
+        .sort((a,b)=>(b.target-b.done)-(a.target-a.done));
+      const chosen = alternatives[0];
+      if(chosen){
+        why.push("WEEKDOEL","RUIM BLOK");
+        const m=Math.min(45,chosen.target-chosen.done);
+        return [`${chosen.name} · ${m} MIN`,
+          `${chosen.name} kan deze week nog richting geven. Je hebt genoeg tijd voor een echte stap.`,
+          why];
+      }
+    }
+
+    why.push("RUIMTE");
+    return ["VRIJE RUIMTE","Je belangrijkste richting staat voldoende op koers. Je hoeft dit vrije blok niet te vullen.",why];
+  }
+
+  function render(){
+    const [task,reason,reasons]=calculateFocus();
+    const shownTask=state.currentFocus||task;
+    $("focusTitle").textContent=state.justCompleted ? "KLAAR · ÉÉN DING GEDAAN" : shownTask;
+    $("focusReason").textContent=state.justCompleted ? "Goed. Één ding gedaan. Je hoeft nu niets nieuws te kiezen. Kijk opnieuw wanneer jij wilt." : (state.currentFocus ? "Gekozen. Nu hoef je alleen hiermee te beginnen." : reason);
+    $("doFocus").textContent=state.justCompleted ? "OPNIEUW KIJKEN" : (state.currentFocus ? "KLAAR" : "DIT GA IK DOEN");
+    const free=nextFree();
+    const freeText=`${free.duration} MIN VRIJ`;
+    const nowText=`NU ${clockLabel(currentMinutes())}`;
+    const nextText=free.nextEvent ? `VOLGENDE ${free.nextEvent.start}` : "GEEN AFSPRAAK";
+    $("focusMeta").innerHTML=[...reasons,freeText,nowText,nextText].map(x=>`<span class="pill">${x}</span>`).join("");
+
+    const nowForAgenda=currentMinutes();
+    $("agenda").innerHTML=state.agenda.map(e=>{
+      const active=mins(e.start)<=nowForAgenda && mins(e.end)>nowForAgenda;
+      const soon=!active && mins(e.start)>nowForAgenda && mins(e.start)-nowForAgenda<=30;
+      return `<div class="event${active?" active-event":""}${soon?" soon-event":""}"><span class="time">${e.start}–${e.end}</span><div><b>${e.title}</b>${active?"<br><span class=\"small\">NU</span>":soon?"<br><span class=\"small\">BIJNA</span>":""}</div></div>`;
+    }).join("");
+    $("agenda").innerHTML+=`<div class="event free"><span class="time">${String(Math.floor(free.start/60)).padStart(2,"0")}:${String(free.start%60).padStart(2,"0")}–${String(Math.floor(free.end/60)).padStart(2,"0")}:${String(free.end%60).padStart(2,"0")}</span><div><b>Vrije ruimte</b><br>${free.duration} min beschikbaar</div></div>`;
+
+    $("basics").innerHTML=Object.entries(state.basics).map(([k,v])=>{
+      const labels={water:"Genoeg gedronken",food:"Iets gegeten",clothes:"Fris aangekleed",teeth:"Tanden",outside:"Even naar buiten"};
+      return `<label class="basic"><input type="checkbox" data-basic="${k}" ${v?"checked":""}>${labels[k]}</label>`;
+    }).join("");
+    document.querySelectorAll("[data-basic]").forEach(b=>b.onchange=()=>{
+      state.basics[b.dataset.basic]=b.checked;
+      if(b.checked){
+        const key=b.dataset.basic==="food"?"food":b.dataset.basic==="outside"?"outside":"basic";
+        if(!state.completedToday.includes(key)) state.completedToday.push(key);
+      }
+      persist(); render();
+    });
+
+    $("goals").innerHTML=state.goals.map(g=>`<div class="goal"><div class="goaltop"><span>${g.name}</span><span>${g.done}/${g.target} min</span></div><div class="bar"><div class="fill" style="width:${Math.min(100,g.done/g.target*100)}%"></div></div><div class="small">${g.done>=g.target?"minimum gehaald":`${g.target-g.done} min nodig`}</div></div>`).join("");
+    $("proud").value=state.proud||"";
+    $("goalDetail").innerHTML=`<h2>Weekmotor</h2>${$("goals").innerHTML}<p class="notice">Dit zijn echte minuten. Als je een focus afrondt, kun je de bestede tijd hier direct aan toevoegen.</p>`;
+  }
+
+  function openEnergy(){
+    document.querySelectorAll("[data-energy]").forEach(x=>x.classList.remove("selected"));
+    $("energyNext").disabled=!!state.energy;
+    $("energyOverlay").classList.add("open");
+  }
+  function openChoice(){
+    const [t,r]=calculateFocus();
+    $("choiceTitle").textContent=t;
+    $("choiceReason").textContent=r;
+    $("choiceOverlay").classList.add("open");
+  }
+
+  document.querySelectorAll("[data-energy]").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("[data-energy]").forEach(x=>x.classList.remove("selected"));
+    b.classList.add("selected"); state.energy=b.dataset.energy; persist(); $("energyNext").disabled=false;
+  });
+  $("energyNext").onclick=()=>{$("energyOverlay").classList.remove("open");openChoice()};
+  $("doFocus").onclick=()=>{
+    if(state.justCompleted){
+      state.justCompleted=false;
+      persist();
+      render();
+      openEnergy();
+      return;
+    }
+    if(state.currentFocus){
+      const task=state.currentFocus;
+      state.pendingCompletedTask=task;
+      $("minutesInput").value="30";
+      $("minutesOverlay").classList.add("open");
+      setTimeout(()=>{$("minutesInput").focus();$("minutesInput").select()},120);
+    } else openChoice();
+  };
+  $("chooseOther").onclick=()=>{openChoice();setTimeout(()=>{$("choiceOther").focus()},50)};
+  $("choiceDo").onclick=()=>{
+    const task=$("choiceTitle").textContent;
+    state.focusDone=true;
+    state.currentFocus=task;
+    persist();
+    $("choiceOverlay").classList.remove("open");
+    render();
+  };
+  function alternativeChoices(){
+    const free=nextFree().duration;
+    const done=state.completedToday||[];
+    const choices=[];
+    const add=(task,reason,key)=>{if(!done.includes(key)) choices.push({task,reason,key});};
+
+    if(!state.basics.food) add("IETS ETEN","Eerst brandstof. Daarna kun je opnieuw kijken.","food");
+    if(free>=10) add("NAAR BUITEN · 10 MIN","Een korte onderbreking om je hoofd vrijer te maken.","outside");
+    if(free>=15) add("HUIS · 15 MIN","Eén klein stukje opruimen of afronden.","house");
+    if(free>=30){
+      if(!done.includes("MUZIEK")) add("MUZIEK · 30 MIN","Een korte creatieve sessie zonder prestatiedruk.","MUZIEK");
+      if(!done.includes("WATCH ME!")) add("WATCH ME! · 30 MIN","Eén klein filmstapje; niet het hele project.","WATCH ME!");
+      if(!done.includes("KUNST")) add("KUNST · 30 MIN","Even maken, tekenen of werken aan beeld.","KUNST");
+    }
+    if(free>=45 && state.energy==="high" && !done.includes("MUZIEK"))
+      add("FERAL · 45 MIN","Je hebt energie en genoeg tijd voor een stevig creatief blok.","MUZIEK");
+
+    return choices.slice(0,4);
+  }
+
+  $("choiceOther").onclick=()=>{
+    const oldList=$("choiceOverlay").querySelector(".choice-list");
+    if(oldList) oldList.remove();
+
+    const list=document.createElement("div");
+    list.className="list choice-list";
+    const choices=alternativeChoices();
+
+    if(!choices.length){
+      const empty=document.createElement("div");
+      empty.className="empty";
+      empty.textContent="Er is nu geen betere passende optie. Je mag ook gewoon ruimte houden.";
+      list.appendChild(empty);
+    } else {
+      choices.forEach(x=>{
+        const b=document.createElement("button");
+        b.innerHTML=`<strong>${x.task}</strong><br><span>${x.reason}</span>`;
+        b.onclick=()=>{
+          state.currentFocus=x.task;
+          state.focusDone=true;
+          persist();
+          $("choiceOverlay").classList.remove("open");
+          render();
+        };
+        list.appendChild(b);
+      });
+    }
+    $("choiceReason").after(list);
+  };
+
+  document.querySelectorAll("[data-tab]").forEach(tab=>tab.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));tab.classList.add("active");
+    document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+    document.querySelector(`[data-screen="${tab.dataset.tab}"]`).classList.add("active");
+    window.scrollTo(0,0);
+  });
+
+  $("park").onclick=()=>{$("parkText").value="";$("parkOverlay").classList.add("open");};
+  $("parkClose").onclick=()=>$("parkOverlay").classList.remove("open");
+  $("parkSave").onclick=()=>{
+    const t=$("parkText").value.trim();
+    if(t)state.parked.push(t);
+    persist();
+    $("parkOverlay").classList.remove("open");
+  };
+  $("saveProud").onclick=()=>{state.proud=$("proud").value.trim();persist();const b=$("saveProud");b.textContent="✓ OPGESLAGEN";setTimeout(()=>b.textContent="OPSLAAN",1400)};
+  function showInfo(title, body, eyebrow="RITME"){
+    $("infoEyebrow").textContent=eyebrow;
+    $("infoTitle").textContent=title;
+    $("infoBody").textContent=body;
+    $("infoOverlay").classList.add("open");
+  }
+  $("infoClose").onclick=()=>$("infoOverlay").classList.remove("open");
+  $("think").onclick=()=>showInfo("Denk mee","Begin met het kleinste ding dat nu helpt. Je hoeft niet de hele dag op te lossen.");
+  $("headFull").onclick=()=>showInfo("Hoofd vol","Parkeer wat niet nu hoeft. Kies daarna één volgende stap.");
+  $("shopping").onclick=()=>showInfo("Boodschappen","Ui, wortel, aardappel, gehakt, tomaat, kaas en pizzabodem.","ETEN");
+  $("calendarInfo").onclick=()=>{
+    $("calendarStatus").textContent = ritmeGoogleReady()
+      ? "KLAAR OM TE KOPPELEN"
+      : "GOOGLE-LADERS NOG NIET KLAAR";
+    $("calendarConnectCard").classList.add("open");
+  };
+  $("calendarCancel").onclick=()=>$("calendarConnectCard").classList.remove("open");
+  $("calendarConnect").onclick=async ()=>{
+    if(!ritmeGoogleReady()){
+      $("calendarStatus").textContent = "GOOGLE-LADERS NOG NIET KLAAR";
+      return;
+    }
+    $("calendarStatus").textContent = "GOOGLE INLOGGEN…";
+    if(typeof ritmeLoadCalendar === "function"){
+      await ritmeLoadCalendar();
+    }else{
+      $("calendarStatus").textContent = "GOOGLE-KOPPELING NOG NIET GELADEN";
+    }
+  };
+
+  const testScenarios=[
+    {name:"Normale dag", energy:"normal", food:true, free:45, done:[], desc:"Normale energie · gegeten · 45 min vrij"},
+    {name:"Weinig energie", energy:"low", food:true, free:30, done:[], desc:"Weinig energie · gegeten · 30 min vrij"},
+    {name:"Veel energie + veel ruimte", energy:"high", food:true, free:90, done:[], desc:"Veel energie · gegeten · 90 min vrij"},
+    {name:"Nog niet gegeten", energy:"normal", food:false, free:45, done:[], desc:"Normale energie · nog niet gegeten"},
+    {name:"Nog 15 minuten", energy:"normal", food:true, free:15, done:[], desc:"Normale energie · gegeten · 15 min vrij"},
+    {name:"Weekdoel loopt achter", energy:"normal", food:true, free:45, done:[], desc:"Normale energie · een weekdoel heeft nog ruimte"},
+    {name:"Vandaag al FERAL gedaan", energy:"high", food:true, free:90, done:["MUZIEK"], desc:"Veel energie · FERAL/muziek vandaag al gedaan"},
+    {name:"Na een afgerond ding", energy:"normal", food:true, free:45, done:["MUZIEK","outside"], desc:"Twee dingen zijn vandaag al gedaan"}
+  ];
+
+  function simulateScenario(s){
+    const oldEnergy=state.energy;
+    const oldBasics=JSON.parse(JSON.stringify(state.basics));
+    const oldDone=[...(state.completedToday||[])];
+    const oldAgenda=JSON.parse(JSON.stringify(state.agenda));
+    const oldFocus=state.currentFocus;
+    const oldTestNow=state._testNow;
+
+    state.energy=s.energy;
+    state.basics.food=s.food;
+    state.completedToday=[...s.done];
+
+    // Maak het vrije blok in de simulatie echt exact zo groot als beschreven.
+    const start=13*60+16;
+    state._testNow=start;
+    state.agenda=[
+      {start:"09:30",end:"10:30",title:"Afspraak"},
+      {start:`${String(Math.floor((start+s.free)/60)).padStart(2,"0")}:${String((start+s.free)%60).padStart(2,"0")}`,end:"18:00",title:"Gesimuleerd blok einde"}
+    ];
+
+    const result=calculateFocus();
+
+    state.energy=oldEnergy;
+    state.basics=oldBasics;
+    state.completedToday=oldDone;
+    state.agenda=oldAgenda;
+    state.currentFocus=oldFocus;
+    if(Number.isFinite(oldTestNow)) state._testNow=oldTestNow;
+    else delete state._testNow;
+
+    const list=$("testList");
+    list.querySelectorAll(".test-result").forEach(x=>x.remove());
+    const resultEl=document.createElement("div");
+    resultEl.className="test-result";
+    resultEl.innerHTML=`<strong>${result[0]}</strong><span>${result[1]}</span><span>${result[2].length ? "Waarom: "+result[2].join(" · ") : "Waarom: context"}</span><span>${s.desc} · RITME ziet ${s.free} min vrije ruimte</span>`;
+    list.appendChild(resultEl);
+  }
+
+  $("testMode").onclick=()=>{
+    const list=$("testList");
+    list.innerHTML="";
+    testScenarios.forEach((s,i)=>{
+      const b=document.createElement("button");
+      b.innerHTML=`<strong>${i+1}. ${s.name}</strong><br><span>${s.desc}</span>`;
+      b.onclick=()=>simulateScenario(s);
+      list.appendChild(b);
+    });
+    $("testOverlay").classList.add("open");
+  };
+  $("testClose").onclick=()=>$("testOverlay").classList.remove("open");
+
+  $("minutesSave").onclick=()=>{
+    const task=state.pendingCompletedTask;
+    const minutes=Math.max(0,Math.round(Number($("minutesInput").value)||0));
+    if(task) markCompletedToday(task);
+    if(task && minutes>0) addGoalTime(task,minutes);
+    state.pendingCompletedTask=null;
+    state.currentFocus=null;
+    state.focusDone=false;
+    state.justCompleted=true;
+    persist();
+    $("minutesOverlay").classList.remove("open");
+    render();
+  };
+  $("minutesCancel").onclick=()=>{
+    state.pendingCompletedTask=null;
+    $("minutesOverlay").classList.remove("open");
+  };
+  $("minutesInput").onkeydown=(e)=>{
+    if(e.key==="Enter") $("minutesSave").click();
+    if(e.key==="Escape") $("minutesCancel").click();
+  };
+
+  render();
+  setInterval(()=>render(),60000);
+  // Open the first check-in only when there is no saved energy/focus yet.
+  // Reopening the file should never interrupt an active day.
+  setTimeout(()=>{
+    if(!state.energy && !state.currentFocus && !state.justCompleted){
+      openEnergy();
+    }
+  },250);
+})();
+</script>
+
+<script id="googleScriptsMarker">
+/*
+  RITME · Google Calendar integration
+  Scope: read-only calendar access.
+  Before use, replace these placeholders with credentials from Google Cloud.
+*/
+const RITME_GOOGLE = {
+  clientId: "478766940010-firuc1d5b36fg06nifjulm4t38n065gk.apps.googleusercontent.com",
+  // Vul deze lokaal in. Deel je API-key niet opnieuw in de chat.
+  apiKey: "PLAK_HIER_LOKAAL_JE_API_KEY",
+  discoveryDoc: "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+  scope: "https://www.googleapis.com/auth/calendar.readonly"
+};
+
+let ritmeTokenClient = null;
+let ritmeGapiReady = false;
+let ritmeGisReady = false;
+
+function ritmeGoogleReady(){
+  // OAuth is the actual user-facing connection. The API key is optional here;
+  // if it is configured, gapi uses it for discovery/quota.
+  return ritmeGisReady && !!RITME_GOOGLE.clientId;
+}
+
+function ritmeLoadCalendar(){
+  if(!ritmeGoogleReady()){
+    document.getElementById("calendarStatus").textContent = "GOOGLE-LADERS NOG NIET KLAAR";
+    return;
+  }
+
+  // IMPORTANT: requestAccessToken() must happen directly inside the user's
+  // click event. Awaiting gapi first can lose the browser's user-activation
+  // and cause the Google popup to be silently blocked on mobile.
+  document.getElementById("calendarStatus").textContent = "GOOGLE INLOGGEN…";
+
+  try{
+    ritmeTokenClient.callback = async (response)=>{
+      if(response.error){
+        document.getElementById("calendarStatus").textContent = "GOOGLE TOESTEMMING NIET VERLEEND";
+        return;
+      }
+
+      localStorage.setItem("ritmeGoogleAuthorized", "1");
+      document.getElementById("calendarStatus").textContent = "AGENDA OPHALEN…";
+
+      try{
+        // The OAuth token is now available. Load/initialize the Calendar
+        // discovery client after the popup flow has completed.
+        if(!ritmeGapiReady){
+          if(typeof gapi === "undefined"){
+            throw new Error("Google API library unavailable");
+          }
+
+          await new Promise((resolve,reject)=>{
+            const started = Date.now();
+            const wait = setInterval(()=>{
+              if(ritmeGapiReady){
+                clearInterval(wait);
+                resolve();
+              }else if(Date.now() - started > 10000){
+                clearInterval(wait);
+                reject(new Error("Google API loader timeout"));
+              }
+            },100);
+          });
+        }
+
+        await gapi.client.load(RITME_GOOGLE.discoveryDoc);
+        await ritmeFetchCalendar();
+      }catch(err){
+        console.error("RITME Google Calendar init:", err);
+        document.getElementById("calendarStatus").textContent = "AGENDA KAN NIET WORDEN GELADEN";
+      }
+    };
+
+    const firstConnection = localStorage.getItem("ritmeGoogleAuthorized") !== "1";
+
+    // This call is intentionally synchronous from the click handler.
+    ritmeTokenClient.requestAccessToken({
+      prompt: firstConnection ? "consent" : ""
+    });
+
+    window.setTimeout(()=>{
+      const s = document.getElementById("calendarStatus").textContent;
+      if(s === "GOOGLE INLOGGEN…"){
+        document.getElementById("calendarStatus").textContent = "GOOGLE-POP-UP NIET VERSCHENEN";
+      }
+    },12000);
+
+  }catch(err){
+    console.error("RITME Google OAuth:", err);
+    document.getElementById("calendarStatus").textContent = "GOOGLE KON NIET STARTEN";
+  }
+}
+
+async function ritmeFetchCalendar(){
+  try{
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23,59,59,999);
+
+    const response = await gapi.client.calendar.events.list({
+      calendarId: "primary",
+      timeMin: now.toISOString(),
+      timeMax: end.toISOString(),
+      singleEvents: true,
+      orderBy: "startTime"
+    });
+
+    const items = response.result.items || [];
+    const events = items.map(e=>{
+      const title = e.summary || "Afspraak";
+
+      // Google all-day events have only a date. Treat them as a full-day block
+      // so they cannot accidentally be fed into the HH:MM time parser.
+      if(!e.start?.dateTime){
+        return {
+          title,
+          start: "00:00",
+          end: "23:59",
+          allDay: true
+        };
+      }
+
+      const startDate = new Date(e.start.dateTime);
+      const endDate = new Date(e.end?.dateTime || e.start.dateTime);
+
+      return {
+        title,
+        start: clockLabel(startDate.getHours()*60 + startDate.getMinutes()),
+        end: clockLabel(endDate.getHours()*60 + endDate.getMinutes()),
+        allDay: false
+      };
+    });
+
+    // The real Google agenda becomes the source for today's RITME agenda.
+    // If Google returns no events, RITME correctly shows the day as open.
+    state.agenda = events;
+    state.googleAgendaConnected = true;
+    state.googleAgendaUpdatedAt = Date.now();
+    persist();
+
+    localStorage.setItem("ritmeGoogleAgenda", JSON.stringify({
+      connected: true,
+      updatedAt: Date.now(),
+      events
+    }));
+
+    document.getElementById("calendarConnectCard").classList.remove("open");
+    showInfo(
+      "Agenda verbonden",
+      `${events.length} afspraak${events.length===1?"":"en"} voor vandaag ontvangen. RITME gebruikt deze nu voor je vrije ruimte en dagregie.`,
+      "AGENDA"
+    );
+
+    if(typeof render === "function") render();
+  }catch(err){
+    document.getElementById("calendarStatus").textContent = "AGENDA OPHALEN MISLUKT";
+  }
+}
+
+/* These callbacks are used by Google's official JS quickstart pattern. */
+window.ritmeGapiLoaded = function(){
+  gapi.load("client", async ()=>{
+    try{
+      const initConfig = {
+        discoveryDocs: [RITME_GOOGLE.discoveryDoc]
+      };
+      if(RITME_GOOGLE.apiKey && !RITME_GOOGLE.apiKey.startsWith("PLAK_HIER")){
+        initConfig.apiKey = RITME_GOOGLE.apiKey;
+      }
+      await gapi.client.init(initConfig);
+      ritmeGapiReady = true;
+    }catch(e){
+      // OAuth can still be initialized; Calendar requests will report a
+      // concrete error in the connection flow if gapi itself is unavailable.
+    }
+  });
+};
+
+window.ritmeGisLoaded = function(){
+  if(!RITME_GOOGLE.clientId) return;
+  ritmeTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: RITME_GOOGLE.clientId,
+    scope: RITME_GOOGLE.scope,
+    callback: ""
+  });
+  ritmeGisReady = true;
+};
+
+if(typeof window !== "undefined"){
+  window.ritmeLoadCalendar = ritmeLoadCalendar;
+}
+</script>
+<script async defer src="https://apis.google.com/js/api.js" onload="ritmeGapiLoaded()"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="ritmeGisLoaded()"></script>
+
+</body>
+</html>
