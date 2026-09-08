@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RITME v5.31</title>
+<style>
+:root{
+  --paper:#f3f0e8;
+  --ink:#111;
+  --acid:#d7ff2f;
+  --line:#c9c6bd;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+body{padding-bottom:112px}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+header{padding:26px 18px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.logo{font-size:39px;line-height:.78;font-weight:950;letter-spacing:-.08em}
+.date{font-size:10px;line-height:1.35;letter-spacing:.14em;font-weight:900;text-align:right;opacity:.55}
+main{padding:0 16px 28px;max-width:620px;margin:auto}
+.screen{display:none}
+.screen.active{display:block}
+.hero{padding:25px 2px 24px}
+.eyebrow{font-size:10px;letter-spacing:.16em;font-weight:900;opacity:.55}
+h1{font-size:47px;line-height:.84;letter-spacing:-.055em;margin:8px 0 13px}
+h2{font-size:29px;line-height:.92;letter-spacing:-.04em;margin:7px 0 10px}
+p{line-height:1.48}
+.card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:19px;margin:0 0 12px}
+.card.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card.acid{background:var(--acid);border-color:var(--ink)}
+.focus-title{font-size:28px;margin:6px 0 8px}
+.reason{margin:0;line-height:1.45}
+.actions{display:flex;gap:8px;margin-top:15px}
+.primary,.secondary{border-radius:999px;padding:13px 16px;font-weight:900}
+.primary{border:0;background:var(--acid);color:var(--ink);flex:1}
+.secondary{border:1px solid #666;background:transparent;color:var(--paper);flex:1}
+.light-secondary{border:1px solid var(--ink);background:transparent;color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pill{font-size:10px;font-weight:900;letter-spacing:.06em;padding:8px 10px;border:1px solid #555;border-radius:999px}
+.event{display:flex;gap:12px;padding:11px 0;border-top:1px solid #333}
+.event:first-child{border-top:0}
+.time{width:72px;font-size:11px;font-weight:900;flex:none}
+.free{border-left:3px solid var(--acid);padding-left:9px}
+.basic{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.basic:first-of-type{border-top:0}
+.basic input{width:20px;height:20px;accent-color:var(--ink)}
+.goal{padding:13px 0;border-top:1px solid var(--line)}
+.goal:first-of-type{border-top:0}
+.goaltop{display:flex;justify-content:space-between;font-weight:900}
+.bar{height:6px;background:#d5d2c9;border-radius:99px;margin-top:8px;overflow:hidden}
+.fill{height:100%;background:var(--ink)}
+.small{font-size:11px;opacity:.65;margin-top:5px}
+.nav{
+ position:fixed;left:0;right:0;bottom:0;height:108px;background:var(--paper);
+ border-top:1px solid var(--ink);z-index:50;padding:8px 16px 9px;
+ display:flex;flex-direction:column;gap:7px
+}
+.park{align-self:flex-end;border:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 17px;font-size:11px;font-weight:900}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;height:43px}
+.tab{border:0;background:transparent;color:#777;font-size:11px;font-weight:900}
+.tab.active{background:var(--acid);color:var(--ink)}
+.overlay{position:fixed;inset:0;background:rgba(17,17,17,.97);z-index:100;display:none;align-items:center;justify-content:center;padding:22px 16px 126px}
+.overlay.open{display:flex}
+.modal{width:min(450px,100%);max-height:100%;overflow:auto;background:var(--paper);border-radius:24px;padding:27px 21px}
+.energy{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.energy button{border:1px solid #999;background:var(--white);border-radius:14px;padding:16px 6px;font-weight:900}
+.energy button.selected{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.full{width:100%;margin-top:13px}
+.list button{width:100%;text-align:left;padding:14px;border:1px solid #bbb;border-radius:14px;background:var(--white);margin-top:8px}
+.list strong{font-size:15px}
+.list span{font-size:11px;opacity:.55}
+textarea{width:100%;min-height:130px;padding:14px;border:1px solid var(--ink);background:var(--paper);resize:vertical}
+.notice{font-size:12px;line-height:1.45}
+.empty{padding:20px 0;opacity:.6}
+.food-row,.ingredient-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:8px}
+.food-row button,.ingredient-row button{border:1px solid var(--ink);background:transparent;border-radius:999px;padding:8px 11px;font-weight:900}
+.food-day{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.food-day:first-child{border-top:0}
+.food-day select,.form-input{width:100%;padding:12px;border:1px solid var(--ink);border-radius:12px;background:var(--white);color:var(--ink)}
+.form-input{margin-top:8px}
+.field-label{display:block;margin-top:13px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.field-help{font-size:11px;line-height:1.4;opacity:.6;margin:5px 2px 0}
+.goal-add{margin-bottom:12px}
+.goal-edit{margin-top:10px}
+.goal-actions{display:flex;gap:7px;margin-top:8px}
+.goal-actions button{flex:1;min-width:0;border:1px solid var(--ink);background:transparent;border-radius:999px;padding:9px;font-weight:900}
+.basic-next{background:var(--acid);border:1px solid var(--ink);border-radius:14px;padding:13px;margin-bottom:10px;font-weight:900}
+.basic-next small{display:block;font-weight:500;margin-top:4px}
+.back-btn{width:100%;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:12px;font-weight:900}
+
+@media(min-width:700px){.nav{height:96px}.tabs{height:38px}.park{margin-right:4px}body{padding-bottom:100px}}
+<style>
+.goal-progress-note{font-size:11px;opacity:.6;margin-top:7px}
+
+<style>
+.test-result{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--white)}
+.test-result strong{font-size:18px}
+.test-result span{display:block;font-size:11px;opacity:.6;margin-top:5px}
+
+<style>
+.choice-list{margin-top:12px}
+.choice-list button{border-color:var(--ink)}
+
+<style>
+#minutesInput{
+  width:100%;
+  margin-top:14px;
+  padding:16px 14px;
+  border:1px solid var(--ink);
+  border-radius:14px;
+  background:var(--white);
+  color:var(--ink);
+  font-size:24px;
+  font-weight:900;
+  outline:none;
+}
+#minutesInput:focus{box-shadow:0 0 0 3px var(--acid)}
+<style>
+.active-event{background:var(--ink);color:var(--paper);padding-left:10px;padding-right:10px;border-radius:10px}
+.soon-event{border-left:3px solid var(--acid);padding-left:9px}
+
+.shopping-item span{display:flex;flex-direction:column;gap:3px}
+.shopping-item small{opacity:.65;font-weight:700}
+
+.shopping-product{border-bottom:1px solid var(--line);padding:8px 0 10px}
+.shopping-product:last-child{border-bottom:0}
+.shopping-product.is-have{opacity:.5}
+.have-row{display:flex;align-items:center;gap:9px;padding-left:34px;font-size:13px;font-weight:800;cursor:pointer}
+.have-row input{width:18px;height:18px}
+</style>
+</style>
+</style>
+</style>
+</style>
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">RITME</div>
+  <div class="date">VANDAAG<br><span id="dateLabel"></span></div>
+</header>
+
+<main>
+  <section class="screen active" data-screen="today">
+    <div class="hero">
+      <div class="eyebrow">MINDER RUIS. MEER LEVEN.</div>
+      <h1>Wat heb je<br>vandaag nodig?</h1>
+      <p>Geen perfecte planning. Eerst luisteren naar jou. Daarna één goede volgende stap.</p>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">DAGREGIE</div>
+      <div class="focus-title" id="focusTitle">—</div>
+      <p class="reason" id="focusReason">De dagmotor kiest op basis van je energie, basis, agenda en weekdoelen.</p>
+      <div class="meta" id="focusMeta"></div>
+      <div class="actions">
+        <button class="primary" id="doFocus">DIT GA IK DOEN</button>
+        <button class="secondary" id="chooseOther">ANDERS</button>
+      </div>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">AGENDA</div>
+      <div id="agenda"></div>
+    </div>
+
+    <div class="card" id="todayFoodCard">
+      <div class="eyebrow">VANDAAG ETEN</div>
+      <h2 id="todayFoodTitle">—</h2>
+      <p class="notice" id="todayFoodCopy">Je hebt voor vandaag nog geen gerecht gekozen.</p>
+      <button class="light-secondary primary full" id="todayFoodOpen">WEEKMENU BEKIJKEN</button>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">BASIS</div>
+      <div id="basics"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">WEEK</div>
+      <h2 id="weekHeadline">Je week, niet je lijstje.</h2>
+      <p id="weekCopy">RITME bewaakt de richting. Je hoeft niet alles vandaag te doen.</p>
+      <div id="goals"></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">AFSLUITEN</div>
+      <h2>Waar ben je vandaag trots op?</h2>
+      <p>Geen rapport. Gewoon één ding dat vandaag goed was.</p>
+      <textarea id="proud" placeholder="Bijvoorbeeld: ik ben toch naar buiten gegaan."></textarea>
+      <button class="primary full" id="saveProud">OPSLAAN</button>
+    </div>
+
+    <div class="card dark">
+      <div class="eyebrow">DENK MEE</div>
+      <h2>Even samen kijken.</h2>
+      <p>Waar loop je tegenaan? RITME kan helpen het kleiner te maken.</p>
+      <button class="secondary" id="think">WAAR BEGIN IK?</button>
+      <button class="secondary" id="headFull">TE VEEL IN MIJN HOOFD</button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="food">
+    <div class="hero"><div class="eyebrow">ETEN</div><h1>Eten zonder<br>gedoe.</h1><p>Jouw eigen gerechten. Jij bouwt de database stap voor stap op; RITME rekent de rest uit.</p></div>
+    <div class="card">
+      <h2>Deze week</h2>
+      <div id="weekMenu"></div>
+      <button class="primary full" id="shopping">BOODSCHAPPENLIJST</button>
+    </div>
+    <div class="card">
+      <h2>Vaste boodschappen</h2>
+      <p class="notice">Producten die je iedere week opnieuw wilt zien. Per week kun je aangeven wat je al hebt.</p>
+      <button class="primary full" id="addStaple">＋ VASTE BOODSCHAP TOEVOEGEN</button>
+      <div id="stapleList"></div>
+    </div>
+    <div class="card">
+      <h2>Mijn gerechten</h2>
+      <p class="notice">Voeg een gerecht toe wanneer je het maakt. Zo groeit je database vanzelf.</p>
+      <button class="primary full" id="addDish">＋ GERECHT TOEVOEGEN</button>
+      <div id="dishList"></div>
+    </div>
+
+  </section>
+
+  <section class="screen" data-screen="goals">
+    <div class="hero"><div class="eyebrow">DOELEN</div><h1>Richting,<br>geen druk.</h1><p>Jij bepaalt wat belangrijk is. Een minimum is nooit een maximum.</p></div>
+    <button class="primary full goal-add" id="addGoal">＋ DOEL TOEVOEGEN</button>
+    <div class="card" id="goalDetail"></div>
+  </section>
+
+  <section class="screen" data-screen="more">
+    <div class="hero"><div class="eyebrow">MEER</div><h1>RITME.</h1><p>Agenda, instellingen en hulp. De dingen die RITME ondersteunen, maar je dag niet overnemen.</p></div>
+    <div class="card"><h2>Google Agenda</h2><p>Alleen lezen. RITME gebruikt afspraken als ankers en zoekt ruimte ertussen.</p><button class="light-secondary primary" id="calendarInfo">AGENDA KOPPELEN</button></div>
+    <div class="card">
+      <div class="eyebrow">ONTWIKKELING</div>
+      <h2>Testmodus</h2>
+      <p>Bekijk hoe de dagmotor reageert op verschillende situaties. Dit verandert je echte dag niet blijvend.</p>
+      <button class="light-secondary primary" id="testMode">DAGMOTOR TESTEN</button>
+    </div>
+    <div class="card"><h2>RITME-principe</h2><p>Elke dag iets doen voor je toekomst, zonder je huidige leven te verwaarlozen.</p></div>
+  </section>
+</main>
+
+<nav class="nav">
+  <button class="park" id="park">＋ PARKEREN</button>
+  <div class="tabs">
+    <button class="tab active" data-tab="today">VANDAAG</button>
+    <button class="tab" data-tab="food">ETEN</button>
+    <button class="tab" data-tab="goals">DOELEN</button>
+    <button class="tab" data-tab="more">MEER</button>
+  </div>
+</nav>
+</div>
+
+
+
+<div class="overlay" id="calendarConnectCard">
+  <div class="modal">
+    <div class="eyebrow">AGENDA</div>
+    <h2>Google Agenda</h2>
+    <p class="notice">RITME kan straks je afspraken lezen en alleen de vrije ruimte gebruiken om één passende volgende stap te kiezen.</p>
+    <div class="small-note" id="calendarStatus">GOOGLE AGENDA · KOPPELING KLAAR</div>
+    <button class="primary full" id="calendarConnect">AGENDA KOPPELEN</button>
+    <button class="back-btn" id="calendarCancel">← TERUG</button>
+  </div>
+</div>
+
+<div class="overlay" id="infoOverlay">
+  <div class="modal">
+    <div class="eyebrow" id="infoEyebrow">RITME</div>
+    <h2 id="infoTitle">Even kijken</h2>
+    <p class="notice" id="infoBody"></p>
+    <button class="primary full" id="infoClose">OKÉ</button>
+  </div>
+</div>
+
+<div class="overlay" id="energyOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · CHECK-IN</div>
+    <h1>Hoeveel<br>energie heb je?</h1>
+    <p>Geen goed of fout. Gewoon even voelen.</p>
+    <div class="energy">
+      <button data-energy="low">WEINIG</button>
+      <button data-energy="normal">NORMAAL</button>
+      <button data-energy="high">VEEL</button>
+    </div>
+    <button class="primary full" id="energyNext" disabled>KIJK WAT NU HELPT</button>
+  </div>
+</div>
+
+<div class="overlay" id="choiceOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · ÉÉN DING</div>
+    <h1>Wat helpt<br>je nu?</h1>
+    <p id="choiceIntro">Ik kies één volgende stap. Jij hoeft niets anders te doen.</p>
+    <div class="card dark">
+      <div class="eyebrow">MIJN VOORSTEL</div>
+      <div class="focus-title" id="choiceTitle">—</div>
+      <p class="reason" id="choiceReason">—</p>
+    </div>
+    <button class="primary full" id="choiceDo">DIT GA IK DOEN</button>
+    <button class="light-secondary primary full" id="choiceOther">ANDERS KIEZEN</button>
+  </div>
+</div>
+
+<div class="overlay" id="minutesOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · AFRONDEN</div>
+    <h1>Hoe lang<br>heb je dit gedaan?</h1>
+    <p>Een schatting is genoeg. Voor creatieve doelen gebruikt RITME dit om je weekrichting bij te houden. Andere acties worden gewoon als gedaan onthouden.</p>
+    <input id="minutesInput" type="number" inputmode="numeric" min="0" max="600" value="30" aria-label="Aantal minuten">
+    <button class="primary full" id="minutesSave">OPSLAAN</button>
+    <button class="light-secondary primary full" id="minutesCancel">ANNULEREN</button>
+  </div>
+</div>
+
+<div class="overlay" id="testOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · TESTMODUS</div>
+    <h1>Hoe reageert<br>de dagmotor?</h1>
+    <p>Kies een situatie. RITME simuleert wat de volgende stap zou zijn.</p>
+    <div class="notice">De test gebruikt tijdelijk een gesimuleerde agenda. Je echte daggegevens worden niet aangepast.</div>
+    <div class="list" id="testList"></div>
+    <button class="light-secondary primary full" id="testClose">SLUITEN</button>
+  </div>
+</div>
+
+<div class="overlay" id="parkOverlay">
+  <div class="modal">
+    <div class="eyebrow">RITME · PARKEREN</div>
+    <h1>Niet nu.<br>Wel bewaren.</h1>
+    <p>Parkeer het idee. Het hoeft nu nergens heen.</p>
+    <textarea id="parkText" placeholder="Wat kwam er tussendoor in je hoofd?"></textarea>
+    <button class="primary full" id="parkSave">PARKEREN</button>
+    <button class="light-secondary primary full" id="parkClose">SLUITEN</button>
+  </div>
+</div>
+
+
+<div class="overlay" id="dishOverlay">
+  <div class="modal">
+    <div class="eyebrow">ETEN · NIEUW GERECHT</div>
+    <h1>Wat eten we?</h1>
+    <input class="form-input" id="dishName" placeholder="Naam van het gerecht">
+    <div id="ingredientInputs"></div>
+    <button class="light-secondary primary full" id="addIngredient">＋ INGREDIËNT</button>
+    <button class="primary full" id="saveDish">GERECHT OPSLAAN</button>
+    <button class="back-btn" id="dishCancel">← TERUG</button>
+  </div>
+</div>
+
+<div class="overlay" id="stapleOverlay">
+  <div class="modal">
+    <div class="eyebrow">ETEN · VASTE BOODSCHAP</div>
+    <h1>Wat haal je<br>iedere week?</h1>
+    <input class="form-input" id="stapleName" placeholder="Product, bijvoorbeeld brood">
+    <input class="form-input" id="stapleQty" placeholder="Hoeveelheid, bv. 5 flessen">
+    <button class="primary full" id="saveStaple">OPSLAAN</button>
+    <button class="back-btn" id="stapleCancel">← TERUG</button>
+  </div>
+</div>
+
+<div class="overlay" id="goalOverlay">
+  <div class="modal">
+    <div class="eyebrow" id="goalOverlayEyebrow">DOELEN · NIEUW DOEL</div>
+    <h1 id="goalOverlayTitle">Waar wil je naartoe?</h1>
+    <label class="field-label" for="goalName">Doel</label>
+    <input class="form-input" id="goalName" placeholder="Bijvoorbeeld: FERAL">
+
+    <label class="field-label" for="goalCategory">Categorie</label>
+    <select class="form-input" id="goalCategory">
+      <option value="persoonlijk">Persoonlijk</option>
+      <option value="muziek">Muziek</option>
+      <option value="creatief">Creatief</option>
+      <option value="praktisch">Praktisch</option>
+      <option value="anders">Anders</option>
+    </select>
+
+    <label class="field-label" for="goalDeadline">Deadline <span style="font-weight:500;opacity:.55;text-transform:none;letter-spacing:0">(optioneel)</span></label>
+    <input class="form-input" id="goalDeadline" type="date" aria-label="Deadline (optioneel)">
+    <div class="field-help">Laat leeg als dit doel geen vaste einddatum heeft.</div>
+
+    <label class="field-label" for="goalTarget">Weekminimum</label>
+    <input class="form-input" id="goalTarget" type="number" min="0" max="10000" placeholder="Bijvoorbeeld 60" inputmode="numeric">
+    <div class="field-help">Het aantal minuten dat je minimaal per week wilt doen. 0 = geen weekminimum.</div>
+    <button class="primary full" id="saveGoal">DOEL OPSLAAN</button>
+    <button class="back-btn" id="goalCancel">← TERUG</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const saved=JSON.parse(localStorage.getItem("ritmeState")||"null");
+  const state=saved||{
+    energy:null,
+    focusDone:false,
+    currentFocus:null,
+    proud:"",
+    basics:{food:false,water:false,shower:false,teeth:false,clothes:false,outside:false},
+    agenda:[
+      {start:"09:30",end:"10:30",title:"Afspraak"},
+      {start:"14:15",end:"15:00",title:"Elin ophalen"},
+      {start:"17:00",end:"17:30",title:"Koken"}
+    ],
+    goals:[
+      {name:"FERAL",done:0,target:60},
+      {name:"WATCH ME!",done:0,target:60},
+      {name:"KUNST",done:60,target:60},
+      {name:"MUZIEK",done:30,target:60}
+    ],
+    parked:[],
+    dishes:[],
+    weekMenu:{},
+    shoppingChecked:{},
+    shoppingHave:{},
+    staples:[],
+    stapleHave:{}
+  };
+
+
+  // v5.25: keep older RITME data compatible while adding the ordered basics,
+  // personal dishes and week menu.
+  if(!state.basics) state.basics={};
+  ["food","water","shower","teeth","clothes","outside"].forEach(k=>{
+    if(typeof state.basics[k]!=="boolean") state.basics[k]=false;
+  });
+  if(!Array.isArray(state.dishes)) state.dishes=[];
+  if(!state.weekMenu || typeof state.weekMenu!=="object") state.weekMenu={};
+  if(!state.shoppingChecked || typeof state.shoppingChecked!=="object") state.shoppingChecked={};
+  if(!state.shoppingHave || typeof state.shoppingHave!=="object") state.shoppingHave={};
+  if(!Array.isArray(state.staples)) state.staples=[];
+  if(!state.stapleHave || typeof state.stapleHave!=="object") state.stapleHave={};
+  
+  // v5.2: weekdoelen zijn echte voortgang, opgeslagen in de browser.
+  const WEEK_KEY="ritmeWeekProgress";
+  const weekSaved=JSON.parse(localStorage.getItem(WEEK_KEY)||"null");
+  const week={};
+  state.goals.forEach(g=>{
+    const key=g.name;
+    week[key]=weekSaved&&Number.isFinite(Number(weekSaved[key])) ? Number(weekSaved[key]) : Number(g.done)||0;
+  });
+  function saveWeek(){localStorage.setItem(WEEK_KEY,JSON.stringify(week));}
+  function syncGoals(){
+    state.goals.forEach(g=>{g.done=week[g.name]||0;});
+  }
+  function goalFromTask(task){
+    const t=(task||"").toUpperCase();
+    if(t.includes("FERAL")||t.includes("MUZIEK")) return "MUZIEK";
+    if(t.includes("WATCH ME")) return "WATCH ME!";
+    if(t.includes("KUNST")) return "KUNST";
+    const custom=state.goals.find(g=>t.includes((g.name||"").toUpperCase()));
+    return custom ? custom.name : null;
+  }
+  function addGoalTime(task,minutes){
+    const key=goalFromTask(task);
+    if(!key) return;
+    week[key]=Math.max(0,(week[key]||0)+minutes);
+    saveWeek();
+    syncGoals();
+  }
+  syncGoals();
+  if(!Array.isArray(state.completedToday)) state.completedToday=[];
+  if(typeof state.justCompleted!=="boolean") state.justCompleted=false;
+  function markCompletedToday(task){
+    const key=goalFromTask(task)||(
+      task.includes("ETEN")?"food":
+      task.includes("BUITEN")?"outside":
+      task.includes("BASIS")?"basic":null
+    );
+    if(key && !state.completedToday.includes(key)) state.completedToday.push(key);
+  }
+
+  function persist(){
+    const copy={...state};
+    delete copy._testNow;
+    localStorage.setItem("ritmeState",JSON.stringify(copy));
+  }
+  function todayKey(){ return new Date().toISOString().slice(0,10); }
+  if(state.day!==todayKey()){
+    state.day=todayKey();
+    state.energy=null; state.focusDone=false; state.currentFocus=null;
+    // Een nieuwe dag begint opnieuw met de dagelijkse basis.
+    // Langdurige gegevens zoals gerechten, doelen en weekmenu blijven bewaard.
+    state.basics={food:false,water:false,shower:false,teeth:false,clothes:false,outside:false};
+    state.completedToday=[];
+    state.justCompleted=false;
+    state.pendingCompletedTask=null;
+    state.proud="";
+    persist();
+  }
+
+  const $=id=>document.getElementById(id);
+  const mins=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};
+
+  function currentMinutes(){
+    if(Number.isFinite(state._testNow)) return state._testNow;
+    const now=new Date();
+    return now.getHours()*60+now.getMinutes();
+  }
+
+  function clockLabel(total){
+    const safe=Math.max(0,Math.min(1439,Math.round(total)));
+    return `${String(Math.floor(safe/60)).padStart(2,"0")}:${String(safe%60).padStart(2,"0")}`;
+  }
+
+  $("dateLabel").textContent=new Intl.DateTimeFormat("nl-NL",{weekday:"short",day:"numeric",month:"numeric"}).format(new Date()).toUpperCase();
+
+  function nextFree(){
+    const now=currentMinutes();
+    let cursor=now;
+    let nextEvent=null;
+    for(const e of [...state.agenda].sort((a,b)=>mins(a.start)-mins(b.start))){
+      const s=mins(e.start),en=mins(e.end);
+      if(en<=now) continue;
+      if(s>cursor){
+        nextEvent=e;
+        return {
+          start:cursor,
+          end:s,
+          duration:s-cursor,
+          nextEvent,
+          untilNext:s-now
+        };
+      }
+      cursor=Math.max(cursor,en);
+    }
+    return {
+      start:cursor,
+      end:21*60,
+      duration:Math.max(0,21*60-cursor),
+      nextEvent:null,
+      untilNext:null
+    };
+  }
+
+  const BASIC_ORDER=[
+    ["food","ONTBIJTEN","Eerst iets eten en je lichaam opstarten."],
+    ["water","DRINKEN","Een glas water hoort bij je basis."],
+    ["shower","DOUCHEN","Fris worden en je lijf wakker maken."],
+    ["teeth","TANDEN POETSEN","Na het eten en drinken je tanden verzorgen."],
+    ["clothes","FRIS AANKLEDEN","Klaar zijn om je dag in te gaan."],
+    ["outside","NAAR BUITEN","Even lucht en ruimte, wanneer dat logisch past."]
+  ];
+  function nextBasic(){
+    for(const [key,label,reason] of BASIC_ORDER){
+      if(!state.basics[key]) return {key,label,reason};
+    }
+    return null;
+  }
+  function basicTaskKey(task){
+    const t=(task||"").toUpperCase();
+    const found=BASIC_ORDER.find(x=>t.includes(x[1]));
+    return found?found[0]:null;
+  }
+  function missingBasics(){
+    return BASIC_ORDER.filter(x=>!state.basics[x[0]]).map(x=>x[0]);
+  }
+
+  function behindGoal(){
+    return state.goals.filter(g=>!g.paused && g.target>0 && g.done<g.target)
+      .map(g=>({...g,missing:g.target-g.done}))
+      .sort((a,b)=>b.missing-a.missing)[0]||null;
+  }
+
+  function agendaContextLabel(free){
+    if(!free || free.duration <= 0) return "GEEN RUIMTE";
+    if(free.untilNext !== null && free.untilNext <= 15) return "AFSPRAAK KOMT ERAAN";
+    if(free.untilNext !== null && free.untilNext <= 30) return "KORTE RUIMTE";
+    if(free.duration >= 60) return "RUIME BLOK";
+    return "VRIJE RUIMTE";
+  }
+
+  function calculateFocus(){
+    const free=nextFree(), goal=behindGoal(), why=[];
+    const completedToday = state.completedToday || [];
+    const did = key => completedToday.includes(key);
+    const minutes = free.duration;
+    const untilNext = free.untilNext;
+
+    // Een afspraak die bijna begint krijgt voorrang. RITME bewaakt een buffer en vult die niet automatisch.
+    if(untilNext!==null && untilNext<=15){
+      why.push("AFSPRAAK","WEINIG TIJD");
+      if(!did("food") && !state.basics.food && untilNext>=8)
+        return ["SNEL IETS ETEN · 5 MIN","Je volgende afspraak begint bijna. Geen groot plan; zorg alleen dat je niet met lege maag vertrekt.",why];
+      const prep=Math.max(3,untilNext-3);
+      return ["KLAARMAKEN · "+prep+" MIN","Je volgende afspraak komt eraan. Houd een kleine buffer vrij om af te ronden en op tijd te vertrekken.",why];
+    }
+
+    // Binnen 30 minuten een afspraak? Dan geen diep werk starten. Een korte afrondactie kan nog wel.
+    if(untilNext!==null && untilNext<=30 && minutes>=10){
+      why.push("AFSPRAAK","KORT BLOK");
+      if(!did("food") && !state.basics.food && untilNext>=15)
+        return ["IETS ETEN · 10 MIN","Er komt binnenkort een afspraak. Dit is genoeg ruimte om eerst te eten en daarna rustig af te ronden.",why];
+      if(!did("outside") && untilNext>=20)
+        return ["NAAR BUITEN · 10 MIN","Er zit een afspraak aan te komen. Een korte wandeling past nog zonder je volgende afspraak te belasten.",why];
+      return ["KLEINE AFRONDING · 10 MIN","Er komt binnenkort een afspraak. Kies iets kleins dat je zonder haast kunt afsluiten.",why];
+    }
+
+    // Tijd is context: RITME kiest geen taak die groter is dan het blok dat er ligt.
+    if(!state.basics.food && !did("food")){
+      why.push("BASIS");
+      if(minutes>=15) return ["IETS ETEN","Je hebt nog niet gegeten. Eerst brandstof; daarna kijken we opnieuw.",why];
+      return ["SNACK · 10 MIN","Er is weinig tijd. Pak iets kleins zodat je niet met honger je afspraak in gaat.",why];
+    }
+
+    if(state.energy==="low"){
+      why.push("ENERGIE");
+      if(!did("outside") && minutes>=20)
+        return ["NAAR BUITEN · 20 MIN","Weinig energie en genoeg ruimte. Eerst je hoofd en lijf wat lucht geven.",why];
+      if(!did("basic") && minutes>=10)
+        return ["BASIS · 10 MIN","Je hebt weinig energie en weinig tijd. Kies iets kleins dat direct helpt.",why];
+      if(minutes>=5) return ["RESET · 5 MIN","Weinig energie. Gebruik vijf minuten om je omgeving of hoofd rustiger te maken.",why];
+      return ["WACHT EVEN","Er is nu nauwelijks ruimte. Je hoeft niets te forceren.",why];
+    }
+
+    // Zeer korte blokken krijgen alleen korte acties.
+    if(minutes < 10){
+      why.push("WEINIG TIJD");
+      return ["KLEINE RESET · 5 MIN","Je volgende vrije moment is kort. Bewaar het grotere werk voor een blok met meer ruimte.",why];
+    }
+
+    // 10–29 minuten: kleine betekenisvolle stap, geen groot weekdoel.
+    if(minutes < 30){
+      const small = !did("outside") ? ["NAAR BUITEN · 10 MIN","Je hebt een kort blok. Even naar buiten past precies."] :
+        !did("basic") ? ["BASIS · 10 MIN","Een klein blok is genoeg voor één praktische basisactie."] :
+        ["OPRUIMEN · 10 MIN","Gebruik dit korte blok om één klein stukje lichter te maken."];
+      why.push("KORT BLOK");
+      return [small[0],small[1],why];
+    }
+
+    // 30–59 minuten: kies een weekdoel dat nog niet vandaag is gedaan.
+    if(minutes < 60){
+      const alternatives = state.goals
+        .filter(g=>!g.paused && g.target>0 && g.done<g.target && !did(g.name))
+        .sort((a,b)=>(b.target-b.done)-(a.target-a.done));
+      const chosen = alternatives[0];
+      if(chosen){
+        why.push("WEEKDOEL","30+ MIN");
+        const m=Math.min(45,chosen.target-chosen.done,minutes);
+        return [`${chosen.name} · ${m} MIN`,
+          `${chosen.name} kan deze week nog richting geven en past binnen je vrije tijd.`,
+          why];
+      }
+      why.push("VRIJE RUIMTE");
+      return ["VRIJE RUIMTE · 30 MIN","Je doelen staan op koers. Dit blok hoeft niet productief te worden.",why];
+    }
+
+    // 60+ minuten: alleen bij voldoende energie een stevig creatief blok.
+    if(state.energy==="high" && minutes>=60 && !did("MUZIEK")){
+      why.push("ENERGIE","RUIM BLOK");
+      return ["FERAL · 45 MIN","Je hebt energie én een ruim blok. Dit is een goed moment voor geconcentreerd creatief werk.",why];
+    }
+
+    if(goal){
+      const alternatives = state.goals
+        .filter(g=>!g.paused && g.target>0 && g.done<g.target && !did(g.name))
+        .sort((a,b)=>(b.target-b.done)-(a.target-a.done));
+      const chosen = alternatives[0];
+      if(chosen){
+        why.push("WEEKDOEL","RUIM BLOK");
+        const m=Math.min(45,chosen.target-chosen.done);
+        return [`${chosen.name} · ${m} MIN`,
+          `${chosen.name} kan deze week nog richting geven. Je hebt genoeg tijd voor een echte stap.`,
+          why];
+      }
+    }
+
+    why.push("RUIMTE");
+    return ["VRIJE RUIMTE","Je belangrijkste richting staat voldoende op koers. Je hoeft dit vrije blok niet te vullen.",why];
+  }
+
+
+  const DAYS=[["mon","MA"],["tue","DI"],["wed","WO"],["thu","DO"],["fri","VR"],["sat","ZA"],["sun","ZO"]];
+  function renderWeekMenu(){
+    return DAYS.map(([key,label])=>{
+      const selected=state.weekMenu[key]||"";
+      const options=`<option value="">— nog gekozen —</option>`+state.dishes.map(d=>`<option value="${escapeHtml(d.name)}" ${selected===d.name?"selected":""}>${escapeHtml(d.name)}</option>`).join("");
+      return `<div class="food-day"><b>${label}</b><select data-food-day="${key}">${options}</select></div>`;
+    }).join("");
+  }
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+  }
+  function combineQuantities(values){
+    const parsed=values.map(raw=>{
+      const m=String(raw).trim().match(/^([0-9]+(?:[.,][0-9]+)?)\s*(.*)$/);
+      if(!m) return null;
+      return {n:parseFloat(m[1].replace(",",".")),u:m[2].trim()};
+    });
+    if(parsed.some(x=>!x)) return values.join(" + ");
+
+    const units=parsed.map(x=>x.u.toLowerCase());
+    if(new Set(units).size!==1) return values.join(" + ");
+
+    const total=parsed.reduce((sum,x)=>sum+x.n,0);
+    const pretty=Number.isInteger(total)
+      ? String(total)
+      : String(Math.round(total*100)/100).replace(".",",");
+    const unit=parsed[0].u;
+
+    // Improve the most common Dutch count units.
+    let displayUnit=unit;
+    if(total===1){
+      displayUnit=unit.replace(/\bverpakkingen\b/i,"verpakking")
+                       .replace(/\bflessen\b/i,"fles")
+                       .replace(/\bblikken\b/i,"blik")
+                       .replace(/\bpakken\b/i,"pak")
+                       .replace(/\bstuks\b/i,"stuk");
+    }else{
+      displayUnit=unit.replace(/\bverpakking\b/i,"verpakkingen")
+                       .replace(/\bfles\b/i,"flessen")
+                       .replace(/\bblik\b/i,"blikken")
+                       .replace(/\bp ak\b/i,"pakken")
+                       .replace(/\bpak\b/i,"pakken")
+                       .replace(/\bstuk\b/i,"stuks");
+    }
+    return `${pretty}${displayUnit?" "+displayUnit:""}`;
+  }
+  function weekKey(){
+    const d=new Date();
+    const day=d.getDay()||7;
+    d.setDate(d.getDate()-day+1);
+    return d.toISOString().slice(0,10);
+  }
+  function renderStaples(){
+    const wk=weekKey();
+    const have=(state.stapleHave&&state.stapleHave[wk])||{};
+    if(!state.staples.length) return `<div class="empty">Nog geen vaste boodschappen. Voeg producten toe die je iedere week opnieuw wilt zien.</div>`;
+    return state.staples.map((x,i)=>{
+      const key=x.id||String(i);
+      const already=!!have[key];
+      return `<div class="shopping-product ${already?"is-have":""}">
+        <div class="food-row"><div><b>${escapeHtml(x.name)}</b>${x.qty?`<div class="small">${escapeHtml(x.qty)}</div>`:""}</div><div style="display:flex;gap:6px"><button data-staple-edit="${i}">WIJZIG</button><button data-staple-delete="${i}">VERWIJDER</button></div></div>
+        <label class="have-row" style="padding-left:0"><input type="checkbox" data-staple-have="${escapeHtml(key)}" ${already?"checked":""}><span>Heb ik al</span></label>
+      </div>`;
+    }).join("");
+  }
+  function renderShopping(){
+    const totals={};
+    const addItem=(name,qty)=>{
+      const clean=(name||"").trim(); if(!clean) return;
+      const key=clean.toLowerCase();
+      if(!totals[key]) totals[key]={name:clean,qty:[]};
+      if(qty) totals[key].qty.push(String(qty).trim());
+    };
+    const wk=weekKey();
+    const stapleHave=(state.stapleHave&&state.stapleHave[wk])||{};
+    (state.staples||[]).forEach((x,i)=>{ const key=x.id||String(i); if(!stapleHave[key]) addItem(x.name,x.qty); });
+    Object.values(state.weekMenu||{}).forEach(dishName=>{
+      const dish=state.dishes.find(d=>d.name===dishName);
+      if(!dish) return;
+      (dish.ingredients||[]).forEach(x=>addItem(x.name,x.qty));
+    });
+    const items=Object.values(totals);
+    const checked=state.shoppingChecked||{};
+    const have=state.shoppingHave||{};
+    const body=items.length
+      ? `<div class="shopping-list">${items.map(x=>{
+          const key=x.name.toLowerCase();
+          const already=!!have[key];
+          const bought=!!checked[key];
+          return `<div class="shopping-product ${already?"is-have":""}">
+            <label class="basic shopping-item">
+              <input type="checkbox" data-shopping="${escapeHtml(key)}" ${bought?"checked":""}>
+              <span><b>${escapeHtml(x.name)}</b>${x.qty.length?`<small>${escapeHtml(combineQuantities(x.qty))}</small>`:""}</span>
+            </label>
+            <label class="have-row">
+              <input type="checkbox" data-have="${escapeHtml(key)}" ${already?"checked":""}>
+              <span>Heb ik al</span>
+            </label>
+          </div>`;
+        }).join("")}</div>
+        <button class="primary full" id="printShopping">PRINTEN</button>`
+      : `<div class="empty">Voeg vaste boodschappen toe of kies gerechten voor je weekmenu.</div>`;
+    showInfo("Boodschappenlijst",body,"ETEN");
+    setTimeout(()=>{
+      document.querySelectorAll("[data-shopping]").forEach(cb=>{cb.onchange=()=>{if(!state.shoppingChecked) state.shoppingChecked={}; state.shoppingChecked[cb.dataset.shopping]=cb.checked; persist();};});
+      document.querySelectorAll("[data-have]").forEach(cb=>{cb.onchange=()=>{if(!state.shoppingHave) state.shoppingHave={}; state.shoppingHave[cb.dataset.have]=cb.checked; persist(); const product=cb.closest(".shopping-product"); if(product) product.classList.toggle("is-have",cb.checked);};});
+      const printBtn=$("printShopping");
+      if(printBtn) printBtn.onclick=()=>{
+        const printable=items.map(x=>{const key=x.name.toLowerCase(); const already=!!have[key]; return `<div class="print-item"><span>${already?"☑":"□"}</span><b>${escapeHtml(x.name)}</b>${x.qty.length?`<span>${escapeHtml(combineQuantities(x.qty))}</span>`:""}${already?`<em>heb ik al</em>`:""}</div>`;}).join("");
+        const w=window.open("","_blank"); if(!w){window.print();return;}
+        w.document.write(`<!doctype html><html><head><title>RITME boodschappenlijst</title><style>body{font-family:Arial,sans-serif;margin:35px;color:#111}h1{font-size:28px;margin-bottom:24px}.print-item{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #ccc;font-size:18px}.print-item b{flex:1}.print-item em{font-size:13px;font-style:normal;opacity:.6}@media print{body{margin:15mm}}</style></head><body><h1>Boodschappenlijst</h1>${printable}</body></html>`);
+        w.document.close(); w.focus(); setTimeout(()=>w.print(),250);
+      };
+    },50);
+  }
+  let editingStaple=-1;
+  function openStaple(index=-1){
+    editingStaple=index;
+    const x=index>=0?state.staples[index]:{name:"",qty:""};
+    $("stapleName").value=x.name||""; $("stapleQty").value=x.qty||"";
+    $("stapleOverlay").classList.add("open"); setTimeout(()=>$("stapleName").focus(),80);
+  }
+  $("addStaple").onclick=()=>openStaple();
+  $("stapleCancel").onclick=()=>$("stapleOverlay").classList.remove("open");
+  $("saveStaple").onclick=()=>{
+    const name=$("stapleName").value.trim(); if(!name){$("stapleName").focus();return;}
+    const qty=$("stapleQty").value.trim();
+    const existing=state.staples.find((x,i)=>i!==editingStaple&&x.name.toLowerCase()===name.toLowerCase());
+    if(existing){existing.qty=qty;} else if(editingStaple>=0){state.staples[editingStaple].name=name; state.staples[editingStaple].qty=qty;} else {state.staples.push({id:"s_"+Date.now()+"_"+Math.random().toString(36).slice(2),name,qty});}
+    persist(); $("stapleOverlay").classList.remove("open"); render();
+  };
+  document.addEventListener("change",e=>{
+    const cb=e.target.closest("[data-staple-have]");
+    if(!cb) return;
+    const wk=weekKey(); if(!state.stapleHave[wk]) state.stapleHave[wk]={};
+    state.stapleHave[wk][cb.dataset.stapleHave]=cb.checked; persist();
+    const product=cb.closest(".shopping-product"); if(product) product.classList.toggle("is-have",cb.checked);
+  });
+  function openDish(){
+    $("dishName").value="";
+    $("ingredientInputs").innerHTML="";
+    addIngredientRow();
+    $("dishOverlay").classList.add("open");
+    setTimeout(()=>$("dishName").focus(),80);
+  }
+  function addIngredientRow(name="",qty=""){
+    const row=document.createElement("div");
+    row.className="ingredient-row";
+    row.innerHTML=`<div><input class="form-input ingredient-name" placeholder="Ingrediënt" value="${escapeHtml(name)}"><input class="form-input ingredient-qty" placeholder="Hoeveelheid, bv. 2 stuks" value="${escapeHtml(qty)}"></div><button type="button">×</button>`;
+    row.querySelector("button").onclick=()=>row.remove();
+    $("ingredientInputs").appendChild(row);
+  }
+  $("addDish").onclick=openDish;
+  $("addIngredient").onclick=()=>addIngredientRow();
+  $("dishCancel").onclick=()=>$("dishOverlay").classList.remove("open");
+  $("saveDish").onclick=()=>{
+    const name=$("dishName").value.trim();
+    const ingredients=[...document.querySelectorAll("#ingredientInputs .ingredient-row")].map(r=>({
+      name:r.querySelector(".ingredient-name").value.trim(),
+      qty:r.querySelector(".ingredient-qty").value.trim()
+    })).filter(x=>x.name);
+    if(!name){$("dishName").focus();return;}
+    const existing=state.dishes.find(d=>d.name.toLowerCase()===name.toLowerCase());
+    if(existing) existing.ingredients=ingredients;
+    else state.dishes.push({name,ingredients});
+    persist();
+    $("dishOverlay").classList.remove("open");
+    render();
+  };
+  $("shopping").onclick=renderShopping;
+  document.addEventListener("change",e=>{
+    const day=e.target.closest("[data-food-day]");
+    if(day){
+      state.weekMenu[day.dataset.foodDay]=e.target.value;
+      persist();
+      render();
+    }
+  });
+
+  let editingGoal=-1;
+
+  $("addGoal").onclick=()=>{
+    editingGoal=-1;
+    $("goalOverlayEyebrow").textContent="DOELEN · NIEUW DOEL";
+    $("goalOverlayTitle").textContent="Waar wil je naartoe?";
+    $("saveGoal").textContent="DOEL OPSLAAN";
+    $("goalName").value="";$("goalDeadline").value="";$("goalTarget").value="";
+    $("goalCategory").value="persoonlijk";
+    $("goalOverlay").classList.add("open");
+    setTimeout(()=>$("goalName").focus(),80);
+  };
+  $("goalCancel").onclick=()=>$("goalOverlay").classList.remove("open");
+  function openGoalEdit(index){
+    const g=state.goals[index]; if(!g) return;
+    editingGoal=index;
+    $("goalOverlayEyebrow").textContent="DOELEN · AANPASSEN";
+    $("goalOverlayTitle").textContent="Doel bijstellen";
+    $("saveGoal").textContent="WIJZIGING OPSLAAN";
+    $("goalName").value=g.name||"";
+    $("goalCategory").value=g.category||"persoonlijk";
+    $("goalDeadline").value=g.deadline||"";
+    $("goalTarget").value=g.target||"";
+    $("goalOverlay").classList.add("open");
+    setTimeout(()=>$("goalName").focus(),80);
+  }
+  $("saveGoal").onclick=()=>{
+    const name=$("goalName").value.trim();
+    if(!name){$("goalName").focus();return;}
+    const target=Math.max(0,Math.round(Number($("goalTarget").value)||0));
+    const category=$("goalCategory").value;
+    const deadline=$("goalDeadline").value||"";
+    if(editingGoal>=0){
+      const g=state.goals[editingGoal];
+      const oldName=g.name;
+      const duplicate=state.goals.some((x,i)=>i!==editingGoal&&(x.name||"").toLowerCase()===name.toLowerCase());
+      if(duplicate){$("goalName").focus();return;}
+      g.name=name; g.category=category; g.deadline=deadline; g.target=target;
+      if(oldName!==name){
+        if(Object.prototype.hasOwnProperty.call(week,oldName)){ week[name]=week[oldName]; delete week[oldName]; }
+      }
+    }else{
+      state.goals.push({name,category,deadline,done:0,target,paused:false});
+      week[name]=0;
+    }
+    saveWeek(); persist();
+    $("goalOverlay").classList.remove("open");
+    editingGoal=-1;
+    render();
+  };
+
+  function render(){
+    const [task,reason,reasons]=calculateFocus();
+    const shownTask=state.currentFocus||task;
+    $("focusTitle").textContent=state.justCompleted ? "KLAAR · ÉÉN DING GEDAAN" : shownTask;
+    $("focusReason").textContent=state.justCompleted ? "Goed. Één ding gedaan. Je hoeft nu niets nieuws te kiezen. Kijk opnieuw wanneer jij wilt." : (state.currentFocus ? "Gekozen. Nu hoef je alleen hiermee te beginnen." : reason);
+    $("doFocus").textContent=state.justCompleted ? "OPNIEUW KIJKEN" : (state.currentFocus ? "KLAAR" : "DIT GA IK DOEN");
+    const free=nextFree();
+    const freeText=`${free.duration} MIN VRIJ`;
+    const nowText=`NU ${clockLabel(currentMinutes())}`;
+    const nextText=free.nextEvent ? `VOLGENDE ${free.nextEvent.start}` : "GEEN AFSPRAAK";
+    $("focusMeta").innerHTML=[...reasons,freeText,nowText,nextText].map(x=>`<span class="pill">${x}</span>`).join("");
+
+    const nowForAgenda=currentMinutes();
+    $("agenda").innerHTML=state.agenda.map(e=>{
+      const active=mins(e.start)<=nowForAgenda && mins(e.end)>nowForAgenda;
+      const soon=!active && mins(e.start)>nowForAgenda && mins(e.start)-nowForAgenda<=30;
+      return `<div class="event${active?" active-event":""}${soon?" soon-event":""}"><span class="time">${e.start}–${e.end}</span><div><b>${e.title}</b>${active?"<br><span class=\"small\">NU</span>":soon?"<br><span class=\"small\">BIJNA</span>":""}</div></div>`;
+    }).join("");
+    $("agenda").innerHTML+=`<div class="event free"><span class="time">${String(Math.floor(free.start/60)).padStart(2,"0")}:${String(free.end/60).padStart(2,"0")}</span><div><b>Vrije ruimte</b><br>${free.duration} min beschikbaar</div></div>`;
+
+    const dayKey=["sun","mon","tue","wed","thu","fri","sat"][new Date().getDay()];
+    const todayDishName=state.weekMenu[dayKey]||"";
+    const todayDish=todayDishName ? state.dishes.find(d=>d.name===todayDishName) : null;
+    $("todayFoodTitle").textContent=todayDish ? todayDish.name : "Nog niets gekozen";
+    $("todayFoodCopy").textContent=todayDish
+      ? "Dit staat vandaag op je weekmenu."
+      : "Kies in het weekmenu wat je vandaag wilt eten.";
+
+    const nb=nextBasic();
+    const nextHtml=nb?`<div class="basic-next">VOLGENDE BASIS: ${nb.label}<small>${nb.reason}</small></div>`:`<div class="basic-next">BASIS OP ORDE<small>Alles wat vandaag als basis is aangemerkt, is gedaan.</small></div>`;
+    $("basics").innerHTML=nextHtml+BASIC_ORDER.map(([k,label])=>{
+      const pretty={food:"Ontbijten",water:"Genoeg gedronken",shower:"Douchen",teeth:"Tanden poetsen",clothes:"Fris aankleden",outside:"Even naar buiten"};
+      return `<label class="basic"><input type="checkbox" data-basic="${k}" ${state.basics[k]?"checked":""}>${pretty[k]}</label>`;
+    }).join("");
+    document.querySelectorAll("[data-basic]").forEach(b=>b.onchange=()=>{
+      state.basics[b.dataset.basic]=b.checked;
+      if(b.checked){
+        const key=b.dataset.basic;
+        if(!state.completedToday.includes(key)) state.completedToday.push(key);
+      }
+      persist(); render();
+    });
+
+    $("goals").innerHTML=state.goals.map(g=>`<div class="goal"><div class="goaltop"><span>${g.name}</span><span>${g.done}/${g.target} min</span></div><div class="bar"><div class="fill" style="width:${g.target?Math.min(100,g.done/g.target*100):0}%"></div></div><div class="small">${g.target? (g.done>=g.target?"minimum gehaald":`${g.target-g.done} min nodig`) : "geen weekminimum"}</div></div>`).join("");
+    $("proud").value=state.proud||"";
+    $("goalDetail").innerHTML=`<h2>Mijn doelen</h2>${state.goals.map((g,i)=>`<div class="goal"><div class="goaltop"><span>${g.name}</span><span>${g.target?`${g.done}/${g.target} min`:"geen minimum"}</span></div><div class="bar"><div class="fill" style="width:${g.target?Math.min(100,g.done/g.target*100):0}%"></div></div><div class="small">${g.category||"persoonlijk"}${g.deadline?` · deadline ${g.deadline}`:""}</div><div class="goal-actions"><button data-goal-edit="${i}">AANPASSEN</button><button data-goal-pause="${i}">${g.paused?"HERVATTEN":"PAUZEREN"}</button><button data-goal-done="${i}">AFGEROND</button></div></div>`).join("")}<p class="notice">Een doel geeft richting. RITME gebruikt het als mogelijke volgende stap, nooit als verplichting.</p>`;
+    document.querySelectorAll("[data-goal-edit]").forEach(b=>b.onclick=()=>openGoalEdit(Number(b.dataset.goalEdit)));
+    document.querySelectorAll("[data-goal-pause]").forEach(b=>b.onclick=()=>{state.goals[Number(b.dataset.goalPause)].paused=!state.goals[Number(b.dataset.goalPause)].paused;persist();render();});
+    document.querySelectorAll("[data-goal-done]").forEach(b=>b.onclick=()=>{state.goals.splice(Number(b.dataset.goalDone),1);persist();render();});
+    $("weekMenu").innerHTML=renderWeekMenu();
+    $("dishList").innerHTML=state.dishes.length?state.dishes.map((d,i)=>`<div class="food-row"><div><b>${d.name}</b></div><button data-dish-delete="${i}">VERWIJDER</button></div>`).join(""):`<div class="empty">Nog geen gerechten. Voeg er eentje toe wanneer je wilt.</div>`;
+    document.querySelectorAll("[data-dish-delete]").forEach(b=>b.onclick=()=>{state.dishes.splice(Number(b.dataset.dishDelete),1);persist();render();});
+    $("stapleList").innerHTML=renderStaples();
+    document.querySelectorAll("[data-staple-delete]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.stapleDelete); const id=state.staples[i]?.id; state.staples.splice(i,1); Object.values(state.stapleHave||{}).forEach(w=>{if(id) delete w[id];}); persist(); render();});
+    document.querySelectorAll("[data-staple-edit]").forEach(b=>b.onclick=()=>openStaple(Number(b.dataset.stapleEdit)));
+
+  }
+
+  function openEnergy(){
+    document.querySelectorAll("[data-energy]").forEach(x=>x.classList.remove("selected"));
+    $("energyNext").disabled=!!state.energy;
+    $("energyOverlay").classList.add("open");
+  }
+  function openChoice(){
+    const b=nextBasic();
+    if(b){
+      $("choiceTitle").textContent=b.label;
+      $("choiceReason").textContent=b.reason;
+      $("choiceIntro").textContent="Je basis loopt in een logische volgorde. Dit is nu de eerstvolgende stap. Je mag ook iets anders kiezen.";
+    }else{
+      const [t,r]=calculateFocus();
+      $("choiceTitle").textContent=t;
+      $("choiceReason").textContent=r;
+      $("choiceIntro").textContent="Ik kies één volgende stap. Jij hoeft niets anders te doen.";
+    }
+    $("choiceOverlay").classList.add("open");
+  }
+
+  document.querySelectorAll("[data-energy]").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("[data-energy]").forEach(x=>x.classList.remove("selected"));
+    b.classList.add("selected"); state.energy=b.dataset.energy; persist(); $("energyNext").disabled=false;
+  });
+  $("energyNext").onclick=()=>{$("energyOverlay").classList.remove("open");openChoice()};
+  $("doFocus").onclick=()=>{
+    if(state.justCompleted){
+      state.justCompleted=false;
+      persist();
+      render();
+      openEnergy();
+      return;
+    }
+    if(state.currentFocus){
+      const task=state.currentFocus;
+      const key=basicTaskKey(task);
+      if(key){
+        state.basics[key]=true;
+        markCompletedToday(task);
+        state.currentFocus=null;
+        state.focusDone=false;
+        state.justCompleted=true;
+        persist();
+        render();
+        return;
+      }
+      state.pendingCompletedTask=task;
+      $("minutesInput").value="30";
+      $("minutesOverlay").classList.add("open");
+      setTimeout(()=>{$("minutesInput").focus();$("minutesInput").select()},120);
+    } else openChoice();
+  };
+  $("chooseOther").onclick=()=>{openChoice();setTimeout(()=>{$("choiceOther").focus()},50)};
+  $("choiceDo").onclick=()=>{
+    const task=$("choiceTitle").textContent;
+    const key=basicTaskKey(task);
+    if(key){
+      state.basics[key]=true;
+      markCompletedToday(task);
+      state.currentFocus=null;
+      state.focusDone=false;
+      state.justCompleted=true;
+      persist();
+      $("choiceOverlay").classList.remove("open");
+      render();
+      return;
+    }
+    state.focusDone=true;
+    state.currentFocus=task;
+    persist();
+    $("choiceOverlay").classList.remove("open");
+    render();
+  };
+  function alternativeChoices(){
+    const free=nextFree().duration;
+    const done=state.completedToday||[];
+    const choices=[];
+    const add=(task,reason,key)=>{if(!done.includes(key)) choices.push({task,reason,key});};
+
+    if(!state.basics.food) add("IETS ETEN","Eerst brandstof. Daarna kun je opnieuw kijken.","food");
+    if(free>=10) add("NAAR BUITEN · 10 MIN","Een korte onderbreking om je hoofd vrijer te maken.","outside");
+    if(free>=15) add("HUIS · 15 MIN","Eén klein stukje opruimen of afronden.","house");
+    if(free>=30){
+      if(!done.includes("MUZIEK")) add("MUZIEK · 30 MIN","Een korte creatieve sessie zonder prestatiedruk.","MUZIEK");
+      if(!done.includes("WATCH ME!")) add("WATCH ME! · 30 MIN","Eén klein filmstapje; niet het hele project.","WATCH ME!");
+      if(!done.includes("KUNST")) add("KUNST · 30 MIN","Even maken, tekenen of werken aan beeld.","KUNST");
+    }
+    if(free>=45 && state.energy==="high" && !done.includes("MUZIEK"))
+      add("FERAL · 45 MIN","Je hebt energie en genoeg tijd voor een stevig creatief blok.","MUZIEK");
+
+    return choices.slice(0,4);
+  }
+
+  $("choiceOther").onclick=()=>{
+    const oldList=$("choiceOverlay").querySelector(".choice-list");
+    if(oldList) oldList.remove();
+
+    const list=document.createElement("div");
+    list.className="list choice-list";
+    const choices=alternativeChoices();
+
+    if(!choices.length){
+      const empty=document.createElement("div");
+      empty.className="empty";
+      empty.textContent="Er is nu geen betere passende optie. Je mag ook gewoon ruimte houden.";
+      list.appendChild(empty);
+    } else {
+      choices.forEach(x=>{
+        const b=document.createElement("button");
+        b.innerHTML=`<strong>${x.task}</strong><br><span>${x.reason}</span>`;
+        b.onclick=()=>{
+          state.currentFocus=x.task;
+          state.focusDone=true;
+          persist();
+          $("choiceOverlay").classList.remove("open");
+          render();
+        };
+        list.appendChild(b);
+      });
+    }
+    $("choiceReason").after(list);
+  };
+
+  document.querySelectorAll("[data-tab]").forEach(tab=>tab.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));tab.classList.add("active");
+    document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+    document.querySelector(`[data-screen="${tab.dataset.tab}"]`).classList.add("active");
+    window.scrollTo(0,0);
+  });
+  $("todayFoodOpen").onclick=()=>{
+    const tab=document.querySelector('[data-tab="food"]');
+    if(tab) tab.click();
+  };
+
+  $("park").onclick=()=>{$("parkText").value="";$("parkOverlay").classList.add("open");};
+  $("parkClose").onclick=()=>$("parkOverlay").classList.remove("open");
+  $("parkSave").onclick=()=>{
+    const t=$("parkText").value.trim();
+    if(t)state.parked.push(t);
+    persist();
+    $("parkOverlay").classList.remove("open");
+  };
+  $("saveProud").onclick=()=>{state.proud=$("proud").value.trim();persist();const b=$("saveProud");b.textContent="✓ OPGESLAGEN";setTimeout(()=>b.textContent="OPSLAAN",1400)};
+  function showInfo(title, body, eyebrow="RITME"){
+    $("infoEyebrow").textContent=eyebrow;
+    $("infoTitle").textContent=title;
+    $("infoBody").innerHTML=body;
+    $("infoOverlay").classList.add("open");
+  }
+  $("infoClose").onclick=()=>$("infoOverlay").classList.remove("open");
+  $("think").onclick=()=>showInfo("Denk mee","Begin met het kleinste ding dat nu helpt. Je hoeft niet de hele dag op te lossen.");
+  $("headFull").onclick=()=>showInfo("Hoofd vol","Parkeer wat niet nu hoeft. Kies daarna één volgende stap.");
+  $("shopping").onclick=renderShopping;
+  $("calendarInfo").onclick=()=>{
+    $("calendarStatus").textContent = ritmeGoogleReady()
+      ? "KLAAR OM TE KOPPELEN"
+      : "GOOGLE-LADERS NOG NIET KLAAR";
+    $("calendarConnectCard").classList.add("open");
+  };
+  $("calendarCancel").onclick=()=>$("calendarConnectCard").classList.remove("open");
+  $("calendarConnect").onclick=async ()=>{
+    if(!ritmeGoogleReady()){
+      $("calendarStatus").textContent = "GOOGLE-LADERS NOG NIET KLAAR";
+      return;
+    }
+    $("calendarStatus").textContent = "GOOGLE INLOGGEN…";
+    if(typeof ritmeLoadCalendar === "function"){
+      await ritmeLoadCalendar();
+    }else{
+      $("calendarStatus").textContent = "GOOGLE-KOPPELING NOG NIET GELADEN";
+    }
+  };
+
+  const testScenarios=[
+    {name:"Normale dag", energy:"normal", food:true, free:45, done:[], desc:"Normale energie · gegeten · 45 min vrij"},
+    {name:"Weinig energie", energy:"low", food:true, free:30, done:[], desc:"Weinig energie · gegeten · 30 min vrij"},
+    {name:"Veel energie + veel ruimte", energy:"high", food:true, free:90, done:[], desc:"Veel energie · gegeten · 90 min vrij"},
+    {name:"Nog niet gegeten", energy:"normal", food:false, free:45, done:[], desc:"Normale energie · nog niet gegeten"},
+    {name:"Nog 15 minuten", energy:"normal", food:true, free:15, done:[], desc:"Normale energie · gegeten · 15 min vrij"},
+    {name:"Weekdoel loopt achter", energy:"normal", food:true, free:45, done:[], desc:"Normale energie · een weekdoel heeft nog ruimte"},
+    {name:"Vandaag al FERAL gedaan", energy:"high", food:true, free:90, done:["MUZIEK"], desc:"Veel energie · FERAL/muziek vandaag al gedaan"},
+    {name:"Na een afgerond ding", energy:"normal", food:true, free:45, done:["MUZIEK","outside"], desc:"Twee dingen zijn vandaag al gedaan"}
+  ];
+
+  function simulateScenario(s){
+    const oldEnergy=state.energy;
+    const oldBasics=JSON.parse(JSON.stringify(state.basics));
+    const oldDone=[...(state.completedToday||[])];
+    const oldAgenda=JSON.parse(JSON.stringify(state.agenda));
+    const oldFocus=state.currentFocus;
+    const oldTestNow=state._testNow;
+
+    state.energy=s.energy;
+    state.basics.food=s.food;
+    state.completedToday=[...s.done];
+
+    // Maak het vrije blok in de simulatie echt exact zo groot als beschreven.
+    const start=13*60+16;
+    state._testNow=start;
+    state.agenda=[
+      {start:"09:30",end:"10:30",title:"Afspraak"},
+      {start:`${String(Math.floor((start+s.free)/60)).padStart(2,"0")}:${String((start+s.free)%60).padStart(2,"0")}`,end:"18:00",title:"Gesimuleerd blok einde"}
+    ];
+
+    const result=calculateFocus();
+
+    state.energy=oldEnergy;
+    state.basics=oldBasics;
+    state.completedToday=oldDone;
+    state.agenda=oldAgenda;
+    state.currentFocus=oldFocus;
+    if(Number.isFinite(oldTestNow)) state._testNow=oldTestNow;
+    else delete state._testNow;
+
+    const list=$("testList");
+    list.querySelectorAll(".test-result").forEach(x=>x.remove());
+    const resultEl=document.createElement("div");
+    resultEl.className="test-result";
+    resultEl.innerHTML=`<strong>${result[0]}</strong><span>${result[1]}</span><span>${result[2].length ? "Waarom: "+result[2].join(" · ") : "Waarom: context"}</span><span>${s.desc} · RITME ziet ${s.free} min vrije ruimte</span>`;
+    list.appendChild(resultEl);
+  }
+
+  $("testMode").onclick=()=>{
+    const list=$("testList");
+    list.innerHTML="";
+    testScenarios.forEach((s,i)=>{
+      const b=document.createElement("button");
+      b.innerHTML=`<strong>${i+1}. ${s.name}</strong><br><span>${s.desc}</span>`;
+      b.onclick=()=>simulateScenario(s);
+      list.appendChild(b);
+    });
+    $("testOverlay").classList.add("open");
+  };
+  $("testClose").onclick=()=>$("testOverlay").classList.remove("open");
+
+  $("minutesSave").onclick=()=>{
+    const task=state.pendingCompletedTask;
+    const minutes=Math.max(0,Math.round(Number($("minutesInput").value)||0));
+    if(task) markCompletedToday(task);
+    if(task && minutes>0) addGoalTime(task,minutes);
+    state.pendingCompletedTask=null;
+    state.currentFocus=null;
+    state.focusDone=false;
+    state.justCompleted=true;
+    persist();
+    $("minutesOverlay").classList.remove("open");
+    render();
+  };
+  $("minutesCancel").onclick=()=>{
+    state.pendingCompletedTask=null;
+    $("minutesOverlay").classList.remove("open");
+  };
+  $("minutesInput").onkeydown=(e)=>{
+    if(e.key==="Enter") $("minutesSave").click();
+    if(e.key==="Escape") $("minutesCancel").click();
+  };
+
+  render();
+  setInterval(()=>render(),60000);
+  // Open the first check-in only when there is no saved energy/focus yet.
+  // Reopening the file should never interrupt an active day.
+  // Google Calendar integration is in a separate script block.
+  // Expose only the app state/helpers needed by that integration.
+  window.ritmeState = state;
+  window.ritmePersist = persist;
+  window.ritmeRender = render;
+  window.ritmeShowInfo = showInfo;
+
+  setTimeout(()=>{
+    if(!state.energy && !state.currentFocus && !state.justCompleted){
+      openEnergy();
+    }
+  },250);
+})();
+</script>
+
+<script id="googleScriptsMarker">
+/*
+  RITME · Google Calendar integration
+  Scope: read-only calendar access.
+  Before use, replace these placeholders with credentials from Google Cloud.
+*/
+const RITME_GOOGLE = {
+  clientId: "478766940010-firuc1d5b36fg06nifjulm4t38n065gk.apps.googleusercontent.com",
+  // Vul deze lokaal in. Deel je API-key niet opnieuw in de chat.
+  apiKey: "PLAK_HIER_LOKAAL_JE_API_KEY",
+  discoveryDoc: "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+  scope: "https://www.googleapis.com/auth/calendar.readonly"
+};
+
+let ritmeTokenClient = null;
+let ritmeGapiReady = false;
+let ritmeGisReady = false;
+
+function ritmeGoogleReady(){
+  // OAuth is the actual user-facing connection. The API key is optional here;
+  // if it is configured, gapi uses it for discovery/quota.
+  return ritmeGisReady && !!RITME_GOOGLE.clientId;
+}
+
+function ritmeLoadCalendar(){
+  if(!ritmeGoogleReady()){
+    document.getElementById("calendarStatus").textContent = "GOOGLE-LADERS NOG NIET KLAAR";
+    return;
+  }
+
+  // IMPORTANT: requestAccessToken() must happen directly inside the user's
+  // click event. Awaiting gapi first can lose the browser's user-activation
+  // and cause the Google popup to be silently blocked on mobile.
+  document.getElementById("calendarStatus").textContent = "GOOGLE INLOGGEN…";
+
+  try{
+    ritmeTokenClient.callback = async (response)=>{
+      if(response.error){
+        document.getElementById("calendarStatus").textContent = "GOOGLE TOESTEMMING NIET VERLEEND";
+        return;
+      }
+
+      localStorage.setItem("ritmeGoogleAuthorized", "1");
+
+      // Keep the OAuth token locally until gapi is definitely ready. On some
+      // devices Google returns the token before the gapi client has finished
+      // loading, so setting it only here can silently do nothing.
+      const accessToken = response.access_token;
+      if(!accessToken) throw new Error("Google returned no access token");
+      localStorage.setItem("ritmeGoogleAccessToken", accessToken);
+
+      document.getElementById("calendarStatus").textContent = "AGENDA OPHALEN…";
+
+      try{
+        // The OAuth token is now available. Load/initialize the Calendar
+        // discovery client after the popup flow has completed.
+        if(!ritmeGapiReady){
+          if(typeof gapi === "undefined"){
+            throw new Error("Google API library unavailable");
+          }
+
+          await new Promise((resolve,reject)=>{
+            const started = Date.now();
+            const wait = setInterval(()=>{
+              if(ritmeGapiReady){
+                clearInterval(wait);
+                resolve();
+              }else if(Date.now() - started > 10000){
+                clearInterval(wait);
+                reject(new Error("Google API loader timeout"));
+              }
+            },100);
+          });
+        }
+
+        // Now gapi is ready: attach the OAuth token and only then call Calendar.
+        gapi.client.setToken({access_token: accessToken});
+        await gapi.client.load(RITME_GOOGLE.discoveryDoc);
+        gapi.client.setToken({access_token: accessToken});
+        await ritmeFetchCalendar();
+      }catch(err){
+        console.error("RITME Google Calendar init:", err);
+        document.getElementById("calendarStatus").textContent = "AGENDA KAN NIET WORDEN GELADEN";
+      }
+    };
+
+    const firstConnection = localStorage.getItem("ritmeGoogleAuthorized") !== "1";
+
+    // This call is intentionally synchronous from the click handler.
+    ritmeTokenClient.requestAccessToken({
+      prompt: firstConnection ? "consent" : ""
+    });
+
+    window.setTimeout(()=>{
+      const s = document.getElementById("calendarStatus").textContent;
+      if(s === "GOOGLE INLOGGEN…"){
+        document.getElementById("calendarStatus").textContent = "GOOGLE-POP-UP NIET VERSCHENEN";
+      }
+    },12000);
+
+  }catch(err){
+    console.error("RITME Google OAuth:", err);
+    document.getElementById("calendarStatus").textContent = "GOOGLE KON NIET STARTEN";
+  }
+}
+
+async function ritmeFetchCalendar(){
+  try{
+    const state = window.ritmeState;
+    const persist = window.ritmePersist;
+    const showInfo = window.ritmeShowInfo;
+    const render = window.ritmeRender;
+    if(!state || !persist || !showInfo) throw new Error("RITME app state is not available");
+
+    const clockLabel = total => {
+      const safe=Math.max(0,Math.min(1439,Math.round(total)));
+      return `${String(Math.floor(safe/60)).padStart(2,"0")}:${String(safe%60).padStart(2,"0")}`;
+    };
+
+    const now = new Date();
+    const dayStart = new Date(now);
+    dayStart.setHours(0,0,0,0);
+    const end = new Date(now);
+    end.setHours(23,59,59,999);
+
+    const response = await gapi.client.calendar.events.list({
+      calendarId: "primary",
+      timeMin: dayStart.toISOString(),
+      timeMax: end.toISOString(),
+      singleEvents: true,
+      orderBy: "startTime"
+    });
+
+    const items = response.result.items || [];
+    const events = items.map(e=>{
+      const title = e.summary || "Afspraak";
+
+      // Google all-day events have only a date. Treat them as a full-day block
+      // so they cannot accidentally be fed into the HH:MM time parser.
+      if(!e.start?.dateTime){
+        return {
+          title,
+          start: "00:00",
+          end: "23:59",
+          allDay: true
+        };
+      }
+
+      const startDate = new Date(e.start.dateTime);
+      const endDate = new Date(e.end?.dateTime || e.start.dateTime);
+
+      return {
+        title,
+        start: clockLabel(startDate.getHours()*60 + startDate.getMinutes()),
+        end: clockLabel(endDate.getHours()*60 + endDate.getMinutes()),
+        allDay: false
+      };
+    });
+
+    // The real Google agenda becomes the source for today's RITME agenda.
+    // If Google returns no events, RITME correctly shows the day as open.
+    state.agenda = events;
+    state.googleAgendaConnected = true;
+    state.googleAgendaUpdatedAt = Date.now();
+    persist();
+
+    localStorage.setItem("ritmeGoogleAgenda", JSON.stringify({
+      connected: true,
+      updatedAt: Date.now(),
+      events
+    }));
+
+    document.getElementById("calendarConnectCard").classList.remove("open");
+    showInfo(
+      "Agenda verbonden",
+      `${events.length} afspraak${events.length===1?"":"en"} voor vandaag ontvangen. RITME gebruikt deze nu voor je vrije ruimte en dagregie.`,
+      "AGENDA"
+    );
+
+    if(typeof render === "function") render();
+  }catch(err){
+    console.error("RITME Google Calendar fetch:", err);
+    const detail = err?.result?.error?.message || err?.message || "onbekende fout";
+    document.getElementById("calendarStatus").textContent = "AGENDA OPHALEN MISLUKT";
+    localStorage.setItem("ritmeGoogleCalendarError", detail);
+  }
+}
+
+/* These callbacks are used by Google's official JS quickstart pattern. */
+window.ritmeGapiLoaded = function(){
+  gapi.load("client", async ()=>{
+    try{
+      const initConfig = {
+        discoveryDocs: [RITME_GOOGLE.discoveryDoc]
+      };
+      if(RITME_GOOGLE.apiKey && !RITME_GOOGLE.apiKey.startsWith("PLAK_HIER")){
+        initConfig.apiKey = RITME_GOOGLE.apiKey;
+      }
+      await gapi.client.init(initConfig);
+      ritmeGapiReady = true;
+    }catch(e){
+      // OAuth can still be initialized; Calendar requests will report a
+      // concrete error in the connection flow if gapi itself is unavailable.
+    }
+  });
+};
+
+window.ritmeGisLoaded = function(){
+  if(!RITME_GOOGLE.clientId) return;
+  ritmeTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: RITME_GOOGLE.clientId,
+    scope: RITME_GOOGLE.scope,
+    callback: ""
+  });
+  ritmeGisReady = true;
+};
+
+if(typeof window !== "undefined"){
+  window.ritmeLoadCalendar = ritmeLoadCalendar;
+}
+</script>
+<script async defer src="https://apis.google.com/js/api.js" onload="ritmeGapiLoaded()"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="ritmeGisLoaded()"></script>
+
+</body>
+</html>
